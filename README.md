@@ -131,3 +131,7 @@ The API Worker CORS configuration currently expects the production frontend orig
 `https://projects.apogeelab.org`
 
 Because of that, API operations are intended to be tested on the deployed production hostname rather than by double-clicking the local HTML files.
+
+## Media viewer update
+
+Development Log media now renders as compact per-update thumbnail strips. Selecting update media or a Gallery tile opens a full-screen media viewer with previous/next navigation. Videos remain supported in the project Gallery and viewer.

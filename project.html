@@ -296,6 +296,23 @@
     </div>
   </div>
 
+  <div class="media-viewer" id="mediaViewer" aria-hidden="true">
+    <button class="media-viewer-close" id="mediaViewerClose" type="button" aria-label="Close media viewer">×</button>
+
+    <button class="media-viewer-nav media-viewer-prev" id="mediaViewerPrev" type="button" aria-label="Previous media">←</button>
+
+    <div class="media-viewer-content" role="dialog" aria-modal="true" aria-label="Project media viewer">
+      <div class="media-viewer-stage" id="mediaViewerStage"></div>
+
+      <div class="media-viewer-footer">
+        <span class="media-viewer-caption" id="mediaViewerCaption"></span>
+        <span class="media-viewer-counter" id="mediaViewerCounter"></span>
+      </div>
+    </div>
+
+    <button class="media-viewer-nav media-viewer-next" id="mediaViewerNext" type="button" aria-label="Next media">→</button>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>

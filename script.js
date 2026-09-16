@@ -6,7 +6,9 @@ const state = {
   project: null,
   updates: [],
   media: [],
-  editingUpdateId: null
+  editingUpdateId: null,
+  viewerItems: [],
+  viewerIndex: 0
 };
 
 const page = document.body?.dataset?.page || "";
@@ -264,6 +266,16 @@ function bindProjectControls() {
   });
 
   document.getElementById("deleteUpdateButton")?.addEventListener("click", handleDeleteCurrentUpdate);
+
+  document.getElementById("mediaViewerClose")?.addEventListener("click", closeMediaViewer);
+  document.getElementById("mediaViewerPrev")?.addEventListener("click", () => shiftMediaViewer(-1));
+  document.getElementById("mediaViewerNext")?.addEventListener("click", () => shiftMediaViewer(1));
+
+  document.getElementById("mediaViewer")?.addEventListener("click", event => {
+    if (event.target === event.currentTarget) {
+      closeMediaViewer();
+    }
+  });
 }
 
 async function loadProjectPage() {
@@ -411,7 +423,7 @@ function renderUpdates() {
     });
   });
 
-  bindUpdateMediaCarousels();
+  bindUpdateMediaStrips();
 }
 
 function renderLatestUpdate(update) {
@@ -441,6 +453,7 @@ function renderLatestUpdate(update) {
 
 function renderOlderUpdate(update) {
   const heading = [update.versionLabel, update.title].filter(Boolean).join(" — ");
+  const mediaMarkup = renderUpdateMedia(update);
 
   return `
     <article class="old-update">
@@ -455,7 +468,7 @@ function renderOlderUpdate(update) {
         </div>
       </div>
       <div class="old-update-body">${formatMultilineText(update.body || "")}</div>
-      ${update.media?.length ? `<div class="old-update-media-note">${update.media.length} media item${update.media.length === 1 ? "" : "s"}</div>` : ""}
+      ${mediaMarkup}
     </article>
   `;
 }
@@ -464,69 +477,63 @@ function renderUpdateMedia(update) {
   const media = update.media || [];
   if (!media.length) return "";
 
-  const slides = media.map((item, index) => {
+  const items = media.map((item, index) => {
+    const label = item.type === "video"
+      ? (item.title || `Video ${index + 1}`)
+      : (item.altText || `Image ${index + 1}`);
+
     if (item.type === "video") {
+      const thumbnail = item.videoId
+        ? `https://i.ytimg.com/vi/${encodeURIComponent(item.videoId)}/hqdefault.jpg`
+        : "";
+
       return `
-        <div class="update-media-slide ${index === 0 ? "is-active" : ""}" data-media-index="${index}">
-          <iframe
-            class="youtube-autoplay-frame"
-            src="${escapeAttr(item.heroEmbedUrl || item.galleryEmbedUrl || item.embedUrl)}"
-            title="${escapeAttr(item.title || update.title)}"
-            allow="autoplay; encrypted-media; picture-in-picture"
-            allowfullscreen
-            loading="lazy"
-            data-youtube-autoplay
-          ></iframe>
-        </div>
+        <button
+          class="update-media-tile update-media-video"
+          type="button"
+          data-update-media-index="${index}"
+          aria-label="Open ${escapeAttr(label)}"
+        >
+          ${thumbnail
+            ? `<img src="${escapeAttr(thumbnail)}" alt="" loading="lazy">`
+            : `<span class="update-video-fallback"></span>`}
+          <span class="update-media-play" aria-hidden="true">▶</span>
+          <span class="update-media-type">VIDEO</span>
+        </button>
       `;
     }
 
     return `
-      <div class="update-media-slide ${index === 0 ? "is-active" : ""}" data-media-index="${index}">
+      <button
+        class="update-media-tile"
+        type="button"
+        data-update-media-index="${index}"
+        aria-label="Open ${escapeAttr(label)}"
+      >
         <img src="${escapeAttr(item.url)}" alt="${escapeAttr(item.altText || update.title)}" loading="lazy">
-      </div>
-    `;
-  }).join("");
-
-  const thumbnails = media.map((item, index) => {
-    const label = item.type === "video" ? "Video" : `Image ${index + 1}`;
-    const thumb = item.type === "video"
-      ? `<span class="media-thumb-video">▶</span>`
-      : `<img src="${escapeAttr(item.url)}" alt="">`;
-
-    return `
-      <button class="update-media-thumb ${index === 0 ? "is-active" : ""}" type="button" data-media-thumb="${index}" aria-label="Show ${escapeAttr(label)}">
-        ${thumb}
       </button>
     `;
   }).join("");
 
   return `
-    <div class="update-media-carousel" data-update-carousel>
-      <div class="update-media-stage">${slides}</div>
-      ${media.length > 1 ? `<div class="update-media-thumbs">${thumbnails}</div>` : ""}
+    <div class="update-media-strip" data-update-media-strip data-update-id="${update.id}">
+      ${items}
     </div>
   `;
 }
 
-function bindUpdateMediaCarousels() {
-  document.querySelectorAll("[data-update-carousel]").forEach(carousel => {
-    const slides = [...carousel.querySelectorAll("[data-media-index]")];
-    const thumbs = [...carousel.querySelectorAll("[data-media-thumb]")];
+function bindUpdateMediaStrips() {
+  document.querySelectorAll("[data-update-media-strip]").forEach(strip => {
+    const updateId = Number(strip.dataset.updateId);
+    const update = state.updates.find(item => item.id === updateId);
+    if (!update) return;
 
-    thumbs.forEach(button => {
+    strip.querySelectorAll("[data-update-media-index]").forEach(button => {
       button.addEventListener("click", () => {
-        const index = Number(button.dataset.mediaThumb);
-
-        slides.forEach(slide => {
-          slide.classList.toggle("is-active", Number(slide.dataset.mediaIndex) === index);
-        });
-
-        thumbs.forEach(thumb => {
-          thumb.classList.toggle("is-active", Number(thumb.dataset.mediaThumb) === index);
-        });
-
-        setupYouTubeVisibility();
+        openMediaViewer(
+          update.media || [],
+          Number(button.dataset.updateMediaIndex)
+        );
       });
     });
   });
@@ -546,10 +553,15 @@ function renderGallery() {
     return;
   }
 
-  grid.innerHTML = state.media.map(item => {
+  grid.innerHTML = state.media.map((item, index) => {
     if (item.type === "video") {
       return `
-        <article class="gallery-item gallery-video-item">
+        <button
+          class="gallery-item gallery-video-item"
+          type="button"
+          data-gallery-media-index="${index}"
+          aria-label="Open ${escapeAttr(item.title || "project video")}"
+        >
           <iframe
             class="gallery-video-frame youtube-autoplay-frame"
             src="${escapeAttr(item.galleryEmbedUrl || item.embedUrl)}"
@@ -558,20 +570,138 @@ function renderGallery() {
             allowfullscreen
             loading="lazy"
             data-youtube-autoplay
+            tabindex="-1"
           ></iframe>
+          <span class="gallery-click-layer" aria-hidden="true"></span>
           <span class="gallery-media-badge">VIDEO</span>
-        </article>
+        </button>
       `;
     }
 
     return `
-      <article class="gallery-item gallery-photo-item">
+      <button
+        class="gallery-item gallery-photo-item"
+        type="button"
+        data-gallery-media-index="${index}"
+        aria-label="Open project image ${index + 1}"
+      >
         <img src="${escapeAttr(item.url)}" alt="${escapeAttr(item.altText || item.updateTitle || state.project?.name || "Project image")}" loading="lazy">
-      </article>
+      </button>
     `;
   }).join("");
+
+  grid.querySelectorAll("[data-gallery-media-index]").forEach(button => {
+    button.addEventListener("click", () => {
+      openMediaViewer(
+        state.media,
+        Number(button.dataset.galleryMediaIndex)
+      );
+    });
+  });
 }
 
+
+// =========================================================
+// MEDIA VIEWER / LIGHTBOX
+// =========================================================
+
+function openMediaViewer(items, index = 0) {
+  if (!Array.isArray(items) || !items.length) return;
+
+  state.viewerItems = items;
+  state.viewerIndex = Math.max(0, Math.min(Number(index) || 0, items.length - 1));
+
+  renderMediaViewer();
+
+  const viewer = document.getElementById("mediaViewer");
+  if (!viewer) return;
+
+  viewer.classList.add("open");
+  viewer.setAttribute("aria-hidden", "false");
+  document.body.classList.add("modal-open");
+  document.getElementById("mediaViewerClose")?.focus();
+}
+
+function closeMediaViewer() {
+  const viewer = document.getElementById("mediaViewer");
+  const stage = document.getElementById("mediaViewerStage");
+
+  if (!viewer) return;
+
+  viewer.classList.remove("open");
+  viewer.setAttribute("aria-hidden", "true");
+
+  // Removing the iframe stops YouTube playback immediately.
+  if (stage) stage.innerHTML = "";
+
+  state.viewerItems = [];
+  state.viewerIndex = 0;
+
+  if (!document.querySelector(".modal.open, .editor-modal.open, .media-viewer.open")) {
+    document.body.classList.remove("modal-open");
+  }
+}
+
+function shiftMediaViewer(direction) {
+  const items = state.viewerItems;
+  if (!items.length || items.length === 1) return;
+
+  state.viewerIndex = (
+    state.viewerIndex + direction + items.length
+  ) % items.length;
+
+  renderMediaViewer();
+}
+
+function renderMediaViewer() {
+  const stage = document.getElementById("mediaViewerStage");
+  const counter = document.getElementById("mediaViewerCounter");
+  const caption = document.getElementById("mediaViewerCaption");
+  const prev = document.getElementById("mediaViewerPrev");
+  const next = document.getElementById("mediaViewerNext");
+
+  if (!stage || !state.viewerItems.length) return;
+
+  const item = state.viewerItems[state.viewerIndex];
+  const multiple = state.viewerItems.length > 1;
+
+  if (item.type === "video") {
+    stage.innerHTML = `
+      <iframe
+        class="media-viewer-video"
+        src="${escapeAttr(item.heroEmbedUrl || item.galleryEmbedUrl || item.embedUrl)}"
+        title="${escapeAttr(item.title || "Project video")}"
+        allow="autoplay; encrypted-media; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    `;
+  } else {
+    stage.innerHTML = `
+      <img
+        class="media-viewer-image"
+        src="${escapeAttr(item.url)}"
+        alt="${escapeAttr(item.altText || item.updateTitle || state.project?.name || "Project image")}"
+      >
+    `;
+  }
+
+  if (counter) {
+    counter.textContent = `${state.viewerIndex + 1} / ${state.viewerItems.length}`;
+  }
+
+  if (caption) {
+    const parts = [
+      item.versionLabel,
+      item.updateTitle || item.title
+    ].filter(Boolean);
+
+    caption.textContent = parts.join(" — ");
+    caption.hidden = !parts.length;
+  }
+
+  if (prev) prev.hidden = !multiple;
+  if (next) next.hidden = !multiple;
+}
 
 // =========================================================
 // PROJECT EDITOR
@@ -1012,7 +1142,27 @@ function bindGlobalModalControls() {
   });
 
   document.addEventListener("keydown", event => {
+    const viewer = document.getElementById("mediaViewer");
+    const viewerOpen = viewer?.classList.contains("open");
+
+    if (viewerOpen && event.key === "ArrowLeft") {
+      event.preventDefault();
+      shiftMediaViewer(-1);
+      return;
+    }
+
+    if (viewerOpen && event.key === "ArrowRight") {
+      event.preventDefault();
+      shiftMediaViewer(1);
+      return;
+    }
+
     if (event.key !== "Escape") return;
+
+    if (viewerOpen) {
+      closeMediaViewer();
+      return;
+    }
 
     document.querySelectorAll(".modal.open, .editor-modal.open").forEach(modal => {
       closeModal(modal.id);

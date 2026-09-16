@@ -2082,3 +2082,317 @@ body.admin-mode .gallery-upload-button {
     aspect-ratio: 16 / 10;
   }
 }
+
+/* =========================================================
+   Compact update media + full-screen media viewer
+   ========================================================= */
+
+/* Development Log media is intentionally compact. Each
+   update shows every attached media item at once as a small
+   horizontal strip instead of a large carousel stage. */
+.update-media-strip {
+  display: flex;
+  gap: 9px;
+  padding: 13px 18px 15px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid rgba(255,255,255,.07);
+  background: rgba(4,7,10,.58);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.2) transparent;
+}
+
+.old-update .update-media-strip {
+  margin: 14px -22px -20px;
+  border-radius: 0 0 14px 14px;
+}
+
+.update-media-tile {
+  position: relative;
+  flex: 0 0 clamp(132px, 13vw, 176px);
+  aspect-ratio: 16 / 9.5;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 9px;
+  background: #070a0e;
+  cursor: zoom-in;
+  appearance: none;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.update-media-tile:hover,
+.update-media-tile:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(92,167,255,.64);
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+  outline: none;
+}
+
+.update-media-tile img,
+.update-video-fallback {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  background: #06090d;
+}
+
+.update-media-video img {
+  filter: saturate(.9) brightness(.82);
+}
+
+.update-video-fallback {
+  background:
+    radial-gradient(circle at center, rgba(92,167,255,.18), transparent 55%),
+    #0a111a;
+}
+
+.update-media-play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.4);
+  border-radius: 50%;
+  color: white;
+  background: rgba(5,8,12,.72);
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(6px);
+  font-size: .82rem;
+  padding-left: 2px;
+}
+
+.update-media-type {
+  position: absolute;
+  left: 7px;
+  bottom: 6px;
+  padding: 3px 6px;
+  border-radius: 5px;
+  color: rgba(255,255,255,.92);
+  background: rgba(5,8,12,.74);
+  backdrop-filter: blur(5px);
+  font-size: .58rem;
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+/* Gallery tiles become clickable lightbox launchers without
+   changing their existing visual geometry. */
+.gallery-item {
+  width: 100%;
+  padding: 0;
+  color: inherit;
+  text-align: inherit;
+  font: inherit;
+  cursor: zoom-in;
+  appearance: none;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.gallery-item:hover,
+.gallery-item:focus-visible {
+  transform: translateY(-3px);
+  border-color: rgba(92,167,255,.52);
+  box-shadow: 0 18px 34px rgba(0,0,0,.26);
+  outline: none;
+}
+
+.gallery-video-frame {
+  pointer-events: none;
+}
+
+.gallery-click-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Full-screen lightbox shared by Development Log strips and
+   the main Gallery. */
+.media-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 76px;
+  background: rgba(2,4,7,.94);
+  backdrop-filter: blur(14px);
+}
+
+.media-viewer.open {
+  display: flex;
+}
+
+.media-viewer-content {
+  width: min(1420px, 92vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.media-viewer-stage {
+  position: relative;
+  width: 100%;
+  height: min(82vh, 900px);
+  min-height: 280px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  background: #020304;
+  box-shadow: 0 34px 90px rgba(0,0,0,.5);
+}
+
+.media-viewer-image,
+.media-viewer-video {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  background: #020304;
+}
+
+.media-viewer-footer {
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: var(--soft);
+  font-size: .78rem;
+}
+
+.media-viewer-caption {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-viewer-counter {
+  flex: 0 0 auto;
+  color: rgba(255,255,255,.78);
+  font-variant-numeric: tabular-nums;
+}
+
+.media-viewer-close,
+.media-viewer-nav {
+  position: fixed;
+  z-index: 302;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.18);
+  color: white;
+  background: rgba(15,21,29,.82);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.media-viewer-close:hover,
+.media-viewer-nav:hover,
+.media-viewer-close:focus-visible,
+.media-viewer-nav:focus-visible {
+  border-color: rgba(92,167,255,.58);
+  background: rgba(24,36,51,.96);
+  outline: none;
+}
+
+.media-viewer-close {
+  top: 20px;
+  right: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.media-viewer-nav {
+  top: 50%;
+  width: 48px;
+  height: 58px;
+  border-radius: 12px;
+  transform: translateY(-50%);
+  font-size: 1.4rem;
+}
+
+.media-viewer-nav:hover {
+  transform: translateY(-50%) scale(1.04);
+}
+
+.media-viewer-prev {
+  left: 18px;
+}
+
+.media-viewer-next {
+  right: 18px;
+}
+
+.media-viewer-nav[hidden] {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .update-media-strip {
+    padding: 11px 14px 13px;
+  }
+
+  .old-update .update-media-strip {
+    margin-left: -22px;
+    margin-right: -22px;
+  }
+
+  .update-media-tile {
+    flex-basis: 128px;
+  }
+
+  .media-viewer {
+    padding: 66px 12px 18px;
+  }
+
+  .media-viewer-content {
+    width: 100%;
+  }
+
+  .media-viewer-stage {
+    height: min(74vh, 720px);
+    min-height: 220px;
+  }
+
+  .media-viewer-nav {
+    top: auto;
+    bottom: 22px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    transform: none;
+  }
+
+  .media-viewer-nav:hover {
+    transform: scale(1.04);
+  }
+
+  .media-viewer-prev {
+    left: 14px;
+  }
+
+  .media-viewer-next {
+    right: 14px;
+  }
+
+  .media-viewer-close {
+    top: 12px;
+    right: 12px;
+  }
+
+  .media-viewer-footer {
+    padding: 0 54px;
+  }
+}
