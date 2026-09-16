@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="projects-home">
+<body class="projects-home" data-page="home">
 
   <header class="site-header">
     <div class="header-inner">
@@ -29,7 +29,6 @@
   </header>
 
   <main class="home-main shell">
-
     <section class="projects-intro">
       <h1>Projects</h1>
       <p>
@@ -39,98 +38,8 @@
     </section>
 
     <section class="projects projects-first" id="projects">
-      <div class="project-grid project-grid-home">
-
-        <a class="project-card home-card featured-home" href="turbojet.html" style="--glow: rgba(92,167,255,.26);">
-          <div class="card-bg turbo-bg"></div>
-          <div class="card-shade home-shade"></div>
-
-          <div class="card-content home-card-content">
-            <div class="card-top">
-              <span class="project-number">PROJECT 01</span>
-              <span class="status dev">In Development</span>
-            </div>
-
-            <div class="card-main home-card-main">
-              <h3>Micro Turbojet V2</h3>
-              <p>
-                A small centrifugal-flow turbojet developed through cycle analysis,
-                component sizing, CAD, manufacturing, and experimental testing.
-              </p>
-
-              <div class="tags">
-                <span class="tag">Propulsion</span>
-                <span class="tag">Thermodynamics</span>
-                <span class="tag">Fluid Mechanics</span>
-                <span class="tag">MATLAB</span>
-                <span class="tag">CAD</span>
-              </div>
-            </div>
-
-            <div class="card-link">
-              <span>View Project</span><span>→</span>
-            </div>
-          </div>
-        </a>
-
-        <a class="project-card home-card" href="lightsaber.html" style="--glow: rgba(66,211,155,.22);">
-          <div class="card-bg lightsaber-bg"></div>
-          <div class="card-shade home-shade"></div>
-
-          <div class="card-content home-card-content">
-            <div class="card-top">
-              <span class="project-number">PROJECT 02</span>
-              <span class="status done">Functional Prototype</span>
-            </div>
-
-            <div class="card-main home-card-main">
-              <h3>Custom Lightsaber</h3>
-              <p>
-                A compact electromechanical build integrating custom electronics,
-                power delivery, mechanical packaging, and machined components.
-              </p>
-
-              <div class="tags">
-                <span class="tag">Embedded Systems</span>
-                <span class="tag">Packaging</span>
-              </div>
-            </div>
-
-            <div class="card-link">
-              <span>View Project</span><span>→</span>
-            </div>
-          </div>
-        </a>
-
-        <a class="project-card home-card" href="rocket.html" style="--glow: rgba(255,123,57,.22);">
-          <div class="card-bg rocket-bg"></div>
-          <div class="card-shade home-shade"></div>
-
-          <div class="card-content home-card-content">
-            <div class="card-top">
-              <span class="project-number">PROJECT 03</span>
-              <span class="status team">Team Project</span>
-            </div>
-
-            <div class="card-main home-card-main">
-              <h3>Liquid Rocket Engine</h3>
-              <p>
-                Propulsion development with SEDS UNLV, focused on real hardware,
-                testing, and team engineering.
-              </p>
-
-              <div class="tags">
-                <span class="tag">Rocket Propulsion</span>
-                <span class="tag">Testing</span>
-              </div>
-            </div>
-
-            <div class="card-link">
-              <span>View Project</span><span>→</span>
-            </div>
-          </div>
-        </a>
-
+      <div id="homeProjectGrid" class="project-grid project-grid-home" aria-live="polite">
+        <div class="project-loading-card">Loading projects…</div>
       </div>
 
       <div class="admin-toolbar admin-only" aria-hidden="true">
@@ -140,7 +49,7 @@
         </div>
 
         <div class="admin-toolbar-actions">
-          <button class="primary" type="button" data-open-editor="newProjectModal">+ Add New Project</button>
+          <button class="primary" type="button" id="addProjectButton">+ Add New Project</button>
         </div>
       </div>
     </section>
@@ -186,10 +95,9 @@
     <div class="footer-right">
       <a href="https://apogeelab.org" target="_blank" rel="noopener noreferrer">Apogee Lab</a>
       <span>·</span>
-      <button type="button" data-open-admin>Admin</button>
+      <button type="button" data-admin-toggle>Admin</button>
     </div>
   </footer>
-
 
   <div class="modal" id="adminModal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
@@ -198,67 +106,86 @@
 
       <form id="adminForm">
         <label for="adminPassword">Admin password</label>
-        <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password">
+        <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+        <p class="form-error" id="adminError" hidden></p>
 
         <div class="modal-actions">
-          <button id="closeAdmin" type="button">Cancel</button>
+          <button type="button" data-close-modal="adminModal">Cancel</button>
           <button class="primary" type="submit">Sign In</button>
         </div>
       </form>
     </div>
   </div>
 
+  <div class="editor-modal" id="projectEditorModal" aria-hidden="true">
+    <div class="editor-card" role="dialog" aria-modal="true" aria-labelledby="projectEditorTitle">
+      <h2 id="projectEditorTitle">Add New Project</h2>
+      <p>Create the project record used throughout the live portfolio.</p>
 
-  <div class="editor-modal" id="newProjectModal" aria-hidden="true">
-    <div class="editor-card" role="dialog" aria-modal="true" aria-labelledby="newProjectTitle">
-      <h2 id="newProjectTitle">Add New Project</h2>
-      <p>Create a project and define the information shown throughout the portfolio.</p>
+      <form id="projectEditorForm">
+        <div class="editor-grid">
+          <div class="editor-field">
+            <label for="projectName">Project title</label>
+            <input id="projectName" name="name" type="text" required>
+          </div>
 
-      <div class="editor-grid">
-        <div class="editor-field">
-          <label for="newProjectName">Project title</label>
-          <input id="newProjectName" type="text" placeholder="Micro Turbojet V3">
-        </div>
+          <div class="editor-field">
+            <label for="projectStatus">Project status</label>
+            <select id="projectStatus" name="status">
+              <option>In Development</option>
+              <option>Proof of Concept</option>
+              <option>Prototype</option>
+              <option>Functional Prototype</option>
+              <option>Complete</option>
+              <option>Team Project</option>
+              <option>Paused</option>
+              <option>Archived</option>
+            </select>
+          </div>
 
-        <div class="editor-field">
-          <label for="newProjectStatus">Project status</label>
-          <select id="newProjectStatus">
-<option>In Development</option>
-<option>Proof of Concept</option>
-<option>Prototype</option>
-<option>Functional Prototype</option>
-<option>Complete</option>
-<option>Team Project</option>
-<option>Paused</option>
-<option>Archived</option>
-</select>
-        </div>
+          <div class="editor-field full">
+            <label for="projectHomeDescription">Homepage description</label>
+            <textarea id="projectHomeDescription" name="homeDescription" required></textarea>
+          </div>
 
-        <div class="editor-field full">
-          <label for="newProjectHomeDescription">Homepage description</label>
-          <textarea id="newProjectHomeDescription" placeholder="Short description shown on the main Projects tile."></textarea>
-        </div>
+          <div class="editor-field full">
+            <label for="projectAboutDescription">Full project description / About</label>
+            <textarea id="projectAboutDescription" name="aboutDescription" required></textarea>
+          </div>
 
-        <div class="editor-field full">
-          <label for="newProjectAbout">Full project description / About</label>
-          <textarea id="newProjectAbout" placeholder="Longer description shown inside the project page."></textarea>
-        </div>
+          <div class="editor-field full">
+            <label for="projectTags">Tags</label>
+            <input id="projectTags" name="tags" type="text" placeholder="Propulsion, Thermodynamics, CAD, MATLAB">
+          </div>
 
-        <div class="editor-field full">
-          <label for="newProjectTags">Tags</label>
-          <input id="newProjectTags" type="text" placeholder="Propulsion, Thermodynamics, CAD, MATLAB">
-          <div class="editor-help">
-            Tags entered here become the discipline pills shown on the project tile and project page.
+          <div class="editor-field">
+            <label for="projectStartDate">Start date</label>
+            <input id="projectStartDate" name="startDate" type="date">
+          </div>
+
+          <div class="editor-field">
+            <label for="projectSortOrder">Sort order</label>
+            <input id="projectSortOrder" name="sortOrder" type="number" step="1" value="0">
+          </div>
+
+          <div class="editor-field full">
+            <label for="projectSlug">URL slug (optional)</label>
+            <input id="projectSlug" name="slug" type="text" placeholder="micro-turbojet-v2">
+            <div class="editor-help">Leave blank to generate it automatically from the project title.</div>
           </div>
         </div>
-      </div>
 
-      <div class="editor-actions">
-        <button type="button" data-close-editor="newProjectModal">Cancel</button>
-        <button class="primary" type="button" data-project-save>Create Project</button>
-      </div>
+        <p class="form-error" id="projectEditorError" hidden></p>
+
+        <div class="editor-actions">
+          <button type="button" data-close-modal="projectEditorModal">Cancel</button>
+          <button class="primary" type="submit">Create Project</button>
+        </div>
+      </form>
     </div>
   </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script src="script.js"></script>
 </body>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project — Apogee Lab Projects</title>
+  <meta name="description" content="Apogee Lab engineering project development log, media, analysis, and testing.">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="project-detail" data-page="project">
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand-link" href="index.html">
+        <img src="logo.png" alt="Apogee Lab logo">
+        <div class="brand-copy">
+          <strong>Apogee Lab</strong>
+          <span>Projects</span>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">All Projects</a>
+        <a href="#updates">Updates</a>
+        <a href="#gallery">Gallery</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="breadcrumb">
+      <a href="index.html">← Back to Projects</a>
+    </div>
+
+    <div class="admin-toolbar admin-only" aria-hidden="true">
+      <div class="admin-toolbar-left">
+        <span class="admin-pill">Admin Mode</span>
+        <span id="adminProjectName">Editing project</span>
+      </div>
+
+      <div class="admin-toolbar-actions">
+        <button type="button" id="editProjectButton">Edit Project</button>
+        <button class="primary" type="button" id="newUpdateButton">+ New Update</button>
+      </div>
+    </div>
+
+    <section class="project-hero" id="projectHero">
+      <div class="project-visual" id="projectHeroMedia">
+        <div class="project-media-loading">Loading project media…</div>
+      </div>
+
+      <aside class="project-summary">
+        <p class="eyebrow" id="projectEyebrow">Engineering Project</p>
+        <h1 id="projectTitle">Loading…</h1>
+
+        <div class="tags" id="projectTags"></div>
+
+        <p class="summary-text" id="projectAbout"></p>
+
+        <div class="meta-grid">
+          <div class="meta">
+            <span>Status</span>
+            <strong id="projectStatus">—</strong>
+          </div>
+          <div class="meta">
+            <span>Project</span>
+            <strong id="projectNumber">—</strong>
+          </div>
+          <div class="meta">
+            <span>Started</span>
+            <strong id="projectStartDate">—</strong>
+          </div>
+          <div class="meta">
+            <span>Documentation</span>
+            <strong>Development Log</strong>
+          </div>
+        </div>
+      </aside>
+
+      <a class="project-scroll-cue" href="#updates" aria-label="Scroll to development log">
+        <span class="project-scroll-circle" aria-hidden="true">↓</span>
+        <span>Development Log</span>
+      </a>
+    </section>
+
+    <section class="detail-section" id="updates">
+      <div class="detail-title">
+        <div>
+          <p class="eyebrow">Development Log</p>
+          <h2>Updates</h2>
+        </div>
+      </div>
+
+      <div id="updatesContainer" aria-live="polite">
+        <div class="content-loading">Loading development log…</div>
+      </div>
+    </section>
+
+    <section class="detail-section" id="gallery">
+      <div class="detail-title">
+        <div>
+          <p class="eyebrow">Project Media</p>
+          <h2>Gallery</h2>
+        </div>
+        <button class="gallery-upload-button admin-only" id="galleryUploadButton" type="button">+ Upload Images</button>
+      </div>
+
+      <div class="gallery-grid" id="galleryGrid" aria-live="polite">
+        <div class="content-loading">Loading gallery…</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <span>© Apogee Lab · Projects</span>
+    <div class="footer-right">
+      <a href="index.html">All Projects</a>
+      <span>·</span>
+      <button type="button" data-admin-toggle>Admin</button>
+    </div>
+  </footer>
+
+  <div class="modal" id="adminModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <h2 id="adminTitle">Admin Access</h2>
+      <p>Sign in to unlock editing controls on the live Projects site.</p>
+
+      <form id="adminForm">
+        <label for="adminPassword">Admin password</label>
+        <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password" required>
+        <p class="form-error" id="adminError" hidden></p>
+
+        <div class="modal-actions">
+          <button type="button" data-close-modal="adminModal">Cancel</button>
+          <button class="primary" type="submit">Sign In</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="editor-modal" id="projectEditorModal" aria-hidden="true">
+    <div class="editor-card" role="dialog" aria-modal="true" aria-labelledby="projectEditorTitle">
+      <h2 id="projectEditorTitle">Edit Project</h2>
+      <p>Update the public-facing project information without touching the site code.</p>
+
+      <form id="projectEditorForm">
+        <div class="editor-grid">
+          <div class="editor-field">
+            <label for="projectName">Project title</label>
+            <input id="projectName" name="name" type="text" required>
+          </div>
+
+          <div class="editor-field">
+            <label for="projectStatusField">Project status</label>
+            <select id="projectStatusField" name="status">
+              <option>In Development</option>
+              <option>Proof of Concept</option>
+              <option>Prototype</option>
+              <option>Functional Prototype</option>
+              <option>Complete</option>
+              <option>Team Project</option>
+              <option>Paused</option>
+              <option>Archived</option>
+            </select>
+          </div>
+
+          <div class="editor-field full">
+            <label for="projectHomeDescription">Homepage description</label>
+            <textarea id="projectHomeDescription" name="homeDescription" required></textarea>
+          </div>
+
+          <div class="editor-field full">
+            <label for="projectAboutDescription">Full project description / About</label>
+            <textarea id="projectAboutDescription" name="aboutDescription" required></textarea>
+          </div>
+
+          <div class="editor-field full">
+            <label for="projectTagsField">Tags</label>
+            <input id="projectTagsField" name="tags" type="text">
+          </div>
+
+          <div class="editor-field">
+            <label for="projectStartDateField">Start date</label>
+            <input id="projectStartDateField" name="startDate" type="date">
+          </div>
+
+          <div class="editor-field">
+            <label for="projectSortOrderField">Sort order</label>
+            <input id="projectSortOrderField" name="sortOrder" type="number" step="1">
+          </div>
+
+          <div class="editor-field full">
+            <label for="projectSlugField">URL slug</label>
+            <input id="projectSlugField" name="slug" type="text">
+            <div class="editor-help">Changing this changes future project links. Existing shared links using the old slug may stop resolving.</div>
+          </div>
+        </div>
+
+        <p class="form-error" id="projectEditorError" hidden></p>
+
+        <div class="editor-actions">
+          <button type="button" data-close-modal="projectEditorModal">Cancel</button>
+          <button class="primary" type="submit">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="editor-modal" id="updateEditorModal" aria-hidden="true">
+    <div class="editor-card update-editor-card" role="dialog" aria-modal="true" aria-labelledby="updateEditorTitle">
+      <h2 id="updateEditorTitle">New Development Update</h2>
+      <p id="updateEditorSubtitle">Add documentation, an optional YouTube video, and project images.</p>
+
+      <form id="updateEditorForm">
+        <div class="editor-grid">
+          <div class="editor-field">
+            <label for="updateVersion">Version label</label>
+            <input id="updateVersion" name="versionLabel" type="text" placeholder="V2.3">
+          </div>
+
+          <div class="editor-field">
+            <label for="updateTitle">Update title</label>
+            <input id="updateTitle" name="title" type="text" required>
+          </div>
+
+          <div class="editor-field full">
+            <label for="updateBody">Update body</label>
+            <textarea id="updateBody" name="body" class="large-textarea" required></textarea>
+          </div>
+
+          <div class="editor-field full">
+            <label for="updateYoutubeUrl">YouTube video (optional, maximum one per update)</label>
+            <div class="inline-input-row">
+              <input id="updateYoutubeUrl" name="youtubeUrl" type="text" placeholder="https://youtu.be/…">
+              <button type="button" class="subtle-danger" id="removeVideoButton">Remove Video</button>
+            </div>
+          </div>
+
+          <div class="editor-field full">
+            <label for="updateYoutubeTitle">Video title (optional)</label>
+            <input id="updateYoutubeTitle" name="youtubeTitle" type="text" placeholder="First engine run">
+          </div>
+
+          <div class="editor-field full">
+            <label for="updateImages">Add images</label>
+            <input id="updateImages" name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple>
+            <div class="editor-help">Up to 6 images per upload, 15 MB each.</div>
+          </div>
+
+          <div class="editor-field full" id="existingImagesField" hidden>
+            <label>Existing images</label>
+            <div class="existing-image-grid" id="existingImages"></div>
+          </div>
+        </div>
+
+        <p class="form-error" id="updateEditorError" hidden></p>
+
+        <div class="editor-actions editor-actions-split">
+          <button type="button" class="danger-button" id="deleteUpdateButton" hidden>Delete Update</button>
+          <div class="editor-actions-right">
+            <button type="button" data-close-modal="updateEditorModal">Cancel</button>
+            <button class="primary" type="submit" id="saveUpdateButton">Publish Update</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="editor-modal" id="galleryUploadModal" aria-hidden="true">
+    <div class="editor-card compact-editor-card" role="dialog" aria-modal="true" aria-labelledby="galleryUploadTitle">
+      <h2 id="galleryUploadTitle">Upload Images</h2>
+      <p>Add images to an existing Development Log update.</p>
+
+      <form id="galleryUploadForm">
+        <div class="editor-grid">
+          <div class="editor-field full">
+            <label for="galleryUpdateSelect">Development update</label>
+            <select id="galleryUpdateSelect" required></select>
+          </div>
+
+          <div class="editor-field full">
+            <label for="galleryImages">Images</label>
+            <input id="galleryImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple required>
+            <div class="editor-help">Up to 6 images per upload, 15 MB each.</div>
+          </div>
+        </div>
+
+        <p class="form-error" id="galleryUploadError" hidden></p>
+
+        <div class="editor-actions">
+          <button type="button" data-close-modal="galleryUploadModal">Cancel</button>
+          <button class="primary" type="submit">Upload Images</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
