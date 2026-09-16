@@ -437,3 +437,225 @@ For a GitHub repository connected to Cloudflare Pages, place all files directly 
 No build command is required.
 
 The production backend should be added only after the frontend structure is approved.
+
+
+---
+
+# Frontend v2 homepage decisions
+
+The Projects homepage is now intentionally **tile-first**.
+
+There is no large hero/title section. The sticky site header is the only top-level introduction, and the project cards begin immediately underneath it.
+
+Desktop target:
+
+```text
+[ Apogee Lab / Projects header ]
+
+[ Turbojet ] [ Lightsaber ] [ Rocket ]
+
+...additional project cards...
+```
+
+The cards are intentionally shorter than the original v1 cards and use smaller titles positioned slightly above the vertical center. The goal is that a typical desktop visitor can immediately see the names of at least three projects without scrolling.
+
+---
+
+# Dynamic project tile image rule
+
+This is now a required backend behavior.
+
+For every project:
+
+```text
+Newest project update
+        ↓
+photos attached to update
+        ↓
+first photo in update order
+        ↓
+AUTOMATIC PROJECT TILE BACKGROUND
+```
+
+Example:
+
+```text
+Turbojet V2.4 update
+
+1. compressor-test.jpg
+2. diffuser-cad.webp
+3. assembly.jpg
+```
+
+The tile for Turbojet automatically uses:
+
+```text
+compressor-test.jpg
+```
+
+If a newer update is published:
+
+```text
+Turbojet V2.5 update
+
+1. running-engine.jpg
+2. nozzle-test.jpg
+```
+
+the tile automatically changes to:
+
+```text
+running-engine.jpg
+```
+
+No separate manual "tile image" upload should be required for normal use.
+
+Possible fallback hierarchy:
+
+```text
+1. first image on newest update
+2. project's manually selected fallback/hero image
+3. generated/default project placeholder
+```
+
+The backend should therefore preserve **image ordering inside each update**.
+
+The `project_images` table should include a sort-order field.
+
+Recommended query concept:
+
+```text
+latest update for project
+    → first image by sort_order
+    → use as tile image
+```
+
+---
+
+# Adding a completely new project
+
+Admin mode will eventually include:
+
+```text
++ Add New Project
+```
+
+on the Projects homepage.
+
+This is already represented in the v2 frontend as a hidden admin-only control.
+
+After the backend is connected, clicking it should open a project editor with fields such as:
+
+```text
+Project name
+Slug
+Short homepage description
+Full about text
+Status
+Start date
+Tags / disciplines
+Initial hero/fallback image
+Sort order
+```
+
+Publishing the project creates a new row in the shared `projects` table.
+
+A new project does **not** require:
+
+- a new D1 database
+- a new Worker
+- a new table set
+- new source-code page files
+
+The site is planned around one Projects database containing all projects.
+
+Conceptually:
+
+```text
+projects
+--------
+1  micro-turbojet-v2
+2  custom-lightsaber
+3  liquid-rocket-engine
+4  future-project
+5  future-project
+...
+```
+
+Related tables use `project_id` to associate their content with the correct project.
+
+```text
+project_updates
+---------------
+id
+project_id
+...
+
+project_images
+--------------
+id
+project_id
+update_id
+...
+```
+
+This means the admin interface can create an unlimited number of projects using the same database structure.
+
+---
+
+# Important production change from the current static prototype
+
+The current v2 repo still contains:
+
+```text
+turbojet.html
+lightsaber.html
+rocket.html
+```
+
+because the backend does not exist yet.
+
+Once the dynamic backend is implemented, individual hard-coded HTML project files should no longer be required.
+
+A production approach may use a single reusable page such as:
+
+```text
+project.html?slug=micro-turbojet-v2
+```
+
+or route-based handling such as:
+
+```text
+projects.apogeelab.org/project/micro-turbojet-v2
+```
+
+The frontend will fetch the correct project record from the Projects API and render the same reusable page template.
+
+That is what makes "+ Add New Project" possible without editing GitHub every time.
+
+
+---
+
+# Frontend v3 homepage layout
+
+The uploaded visual reference is now the homepage target.
+
+The homepage hierarchy is:
+
+```text
+Sticky site header
+
+Projects          short explanation
+
+[      featured project / flagship      ]
+
+[ second project ] [ third project ]
+
+[ additional projects continue below ]
+```
+
+The homepage intentionally does **not** have a hero section.
+
+The featured project is larger, but the title is positioned so that the second row is already entering the viewport on a typical desktop display. This lets visitors immediately understand that the site contains multiple projects.
+
+The current static prototype still uses a generated visual for Turbojet and a real uploaded image for Lightsaber. In production, these card backgrounds will come from the first photo of the project's latest update.

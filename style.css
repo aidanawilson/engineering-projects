@@ -859,3 +859,316 @@ button, input, textarea {
     transition: none !important;
   }
 }
+
+
+/* =========================================================
+   PROJECTS HOMEPAGE V2
+   Tile-first landing page
+   ========================================================= */
+
+.projects-home .site-header {
+  position: sticky;
+}
+
+.home-main {
+  padding-top: 18px;
+}
+
+.projects-first {
+  padding: 0 0 76px;
+}
+
+.project-grid-home {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.project-grid-home .home-card {
+  grid-column: auto;
+  min-height: 0;
+  height: clamp(315px, 37vw, 390px);
+}
+
+/*
+  Put the title area slightly ABOVE the vertical center.
+  This keeps the titles visible immediately on load while still
+  leaving room for the description and tags below.
+*/
+.home-card-content {
+  padding: 20px;
+}
+
+.home-card-main {
+  margin-top: 0;
+  margin-bottom: 0;
+  position: absolute;
+  left: 20px;
+  right: 20px;
+  top: 39%;
+  transform: translateY(-50%);
+}
+
+.project-grid-home .home-card .home-card-main h3 {
+  font-size: clamp(1.65rem, 2.3vw, 2.45rem);
+  line-height: .96;
+  max-width: 95%;
+}
+
+.project-grid-home .home-card .home-card-main p {
+  margin-top: 11px;
+  font-size: .88rem;
+  line-height: 1.5;
+  max-width: 96%;
+}
+
+.project-grid-home .home-card .tags {
+  margin-top: 12px;
+}
+
+.project-grid-home .home-card .tag {
+  padding: 6px 8px;
+  font-size: .61rem;
+}
+
+.project-grid-home .home-card .card-link {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.home-shade {
+  background:
+    linear-gradient(180deg,
+      rgba(5,8,12,.25) 0%,
+      rgba(5,8,12,.42) 31%,
+      rgba(5,8,12,.66) 63%,
+      rgba(5,8,12,.93) 100%),
+    linear-gradient(105deg, rgba(5,8,12,.28), transparent 72%);
+}
+
+/* Keep the background image readable but never let hover sharpen
+   enough to make the overlay text harder to read. */
+.project-grid-home .home-card .card-bg {
+  filter: blur(1.4px) saturate(1.05);
+  transform: scale(1.055);
+}
+
+.project-grid-home .home-card:hover .card-bg {
+  filter: blur(1.65px) saturate(1.12);
+  transform: scale(1.11);
+}
+
+.project-grid-home .home-card:hover {
+  transform: translateY(-7px) scale(1.018);
+}
+
+.admin-project-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.admin-only {
+  display: none;
+}
+
+body.admin-mode .admin-only {
+  display: flex;
+}
+
+.add-project-button {
+  border: 1px solid rgba(92,167,255,.35);
+  border-radius: 12px;
+  padding: 11px 15px;
+  color: white;
+  background: linear-gradient(180deg, #1b6fc3, #155a9e);
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(20,87,153,.24);
+}
+
+.add-project-button:hover {
+  transform: translateY(-1px);
+}
+
+.compact-capabilities {
+  padding-top: 68px;
+}
+
+.compact-section-head {
+  margin-bottom: 18px;
+}
+
+@media (max-width: 1040px) {
+  .project-grid-home {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-grid-home .home-card {
+    height: 350px;
+  }
+}
+
+@media (max-width: 680px) {
+  .home-main {
+    padding-top: 12px;
+  }
+
+  .project-grid-home {
+    grid-template-columns: 1fr;
+  }
+
+  .project-grid-home .home-card {
+    height: 330px;
+  }
+
+  .home-card-main {
+    top: 40%;
+  }
+}
+
+
+/* =========================================================
+   PROJECTS HOMEPAGE V3
+   Reference-image layout
+   ========================================================= */
+
+.projects-home .home-main {
+  padding-top: 0;
+}
+
+.projects-intro {
+  min-height: 118px;
+  display: grid;
+  grid-template-columns: minmax(240px, .8fr) minmax(360px, 1.1fr);
+  align-items: center;
+  gap: 56px;
+  padding: 8px 2px 14px;
+}
+
+.projects-intro h1 {
+  margin: 0;
+  font-size: clamp(2.75rem, 4.6vw, 4.65rem);
+  line-height: .95;
+  letter-spacing: -.052em;
+}
+
+.projects-intro p {
+  max-width: 610px;
+  justify-self: end;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.66;
+}
+
+.projects-first {
+  padding-top: 0;
+}
+
+.project-grid-home {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.project-grid-home .featured-home {
+  grid-column: 1 / -1;
+  height: clamp(410px, 39vw, 535px);
+}
+
+.project-grid-home .home-card:not(.featured-home) {
+  height: clamp(305px, 26vw, 365px);
+}
+
+/* Featured title sits slightly above center, matching the reference. */
+.project-grid-home .featured-home .home-card-main {
+  top: 58%;
+  transform: translateY(-50%);
+}
+
+.project-grid-home .featured-home .home-card-main h3 {
+  font-size: clamp(2.75rem, 4.9vw, 4.8rem);
+  max-width: 780px;
+}
+
+.project-grid-home .featured-home .home-card-main p {
+  max-width: 790px;
+  font-size: 1rem;
+  line-height: 1.58;
+}
+
+.project-grid-home .home-card:not(.featured-home) .home-card-main {
+  top: 53%;
+  transform: translateY(-50%);
+}
+
+.project-grid-home .home-card:not(.featured-home) .home-card-main h3 {
+  font-size: clamp(1.75rem, 2.65vw, 2.7rem);
+}
+
+.project-grid-home .home-card:not(.featured-home) .home-card-main p {
+  font-size: .86rem;
+}
+
+.project-grid-home .home-card .card-link {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+@media (max-width: 900px) {
+  .projects-intro {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 26px 2px 18px;
+  }
+
+  .projects-intro p {
+    justify-self: start;
+  }
+
+  .project-grid-home {
+    grid-template-columns: 1fr;
+  }
+
+  .project-grid-home .featured-home {
+    grid-column: auto;
+  }
+
+  .project-grid-home .featured-home,
+  .project-grid-home .home-card:not(.featured-home) {
+    height: 350px;
+  }
+
+  .project-grid-home .featured-home .home-card-main,
+  .project-grid-home .home-card:not(.featured-home) .home-card-main {
+    top: 50%;
+  }
+}
+
+@media (max-width: 680px) {
+  .projects-intro {
+    min-height: 0;
+    padding-top: 22px;
+  }
+
+  .projects-intro h1 {
+    font-size: 2.65rem;
+  }
+
+  .projects-intro p {
+    font-size: .9rem;
+  }
+
+  .project-grid-home .featured-home,
+  .project-grid-home .home-card:not(.featured-home) {
+    height: 325px;
+  }
+
+  .project-grid-home .home-card-main p,
+  .project-grid-home .home-card .tags {
+    display: none;
+  }
+
+  .project-grid-home .featured-home .home-card-main h3,
+  .project-grid-home .home-card:not(.featured-home) .home-card-main h3 {
+    font-size: 2rem;
+  }
+}

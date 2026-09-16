@@ -8,7 +8,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="projects-home">
 
   <header class="site-header">
     <div class="header-inner">
@@ -28,47 +28,36 @@
     </div>
   </header>
 
-  <main>
-    <section class="hero shell">
-      <div class="hero-copy">
-        <p class="eyebrow">Engineering Projects</p>
-        <h1>From an idea to working hardware.</h1>
-        <p>
-          A record of mechanical systems, propulsion work, embedded electronics,
-          analysis, prototyping, testing, failure, and iteration.
-        </p>
-      </div>
+  <main class="home-main shell">
+
+    <section class="projects-intro">
+      <h1>Projects</h1>
+      <p>
+        Each project page documents the engineering process through design,
+        analysis, prototyping, testing, and iteration.
+      </p>
     </section>
 
-    <section class="projects shell" id="projects">
-      <div class="section-head">
-        <div>
-          <p class="eyebrow">Selected Work</p>
-          <h2>Projects</h2>
-        </div>
-        <p>
-          Each project page is designed as an engineering case study and development log,
-          not just a finished-product gallery.
-        </p>
-      </div>
+    <section class="projects projects-first" id="projects">
+      <div class="project-grid project-grid-home">
 
-      <div class="project-grid">
-
-        <a class="project-card featured" href="turbojet.html" style="--glow: rgba(92,167,255,.26);">
+        <a class="project-card home-card featured-home" href="turbojet.html" style="--glow: rgba(92,167,255,.26);">
           <div class="card-bg turbo-bg"></div>
-          <div class="card-shade"></div>
-          <div class="card-content">
+          <div class="card-shade home-shade"></div>
+
+          <div class="card-content home-card-content">
             <div class="card-top">
               <span class="project-number">PROJECT 01</span>
               <span class="status dev">In Development</span>
             </div>
 
-            <div class="card-main">
+            <div class="card-main home-card-main">
               <h3>Micro Turbojet V2</h3>
               <p>
                 A small centrifugal-flow turbojet developed through cycle analysis,
                 component sizing, CAD, manufacturing, and experimental testing.
               </p>
+
               <div class="tags">
                 <span class="tag">Propulsion</span>
                 <span class="tag">Thermodynamics</span>
@@ -76,72 +65,81 @@
                 <span class="tag">MATLAB</span>
                 <span class="tag">CAD</span>
               </div>
-              <div class="card-link">
-                <span>View Project</span><span>→</span>
-              </div>
+            </div>
+
+            <div class="card-link">
+              <span>View Project</span><span>→</span>
             </div>
           </div>
         </a>
 
-        <a class="project-card" href="lightsaber.html" style="--glow: rgba(66,211,155,.22);">
+        <a class="project-card home-card" href="lightsaber.html" style="--glow: rgba(66,211,155,.22);">
           <div class="card-bg lightsaber-bg"></div>
-          <div class="card-shade"></div>
-          <div class="card-content">
+          <div class="card-shade home-shade"></div>
+
+          <div class="card-content home-card-content">
             <div class="card-top">
               <span class="project-number">PROJECT 02</span>
               <span class="status done">Functional Prototype</span>
             </div>
 
-            <div class="card-main">
+            <div class="card-main home-card-main">
               <h3>Custom Lightsaber</h3>
               <p>
                 A compact electromechanical build integrating custom electronics,
                 power delivery, mechanical packaging, and machined components.
               </p>
+
               <div class="tags">
                 <span class="tag">Embedded Systems</span>
                 <span class="tag">Packaging</span>
-                <span class="tag">Electronics</span>
               </div>
-              <div class="card-link">
-                <span>View Project</span><span>→</span>
-              </div>
+            </div>
+
+            <div class="card-link">
+              <span>View Project</span><span>→</span>
             </div>
           </div>
         </a>
 
-        <a class="project-card" href="rocket.html" style="--glow: rgba(255,123,57,.22);">
+        <a class="project-card home-card" href="rocket.html" style="--glow: rgba(255,123,57,.22);">
           <div class="card-bg rocket-bg"></div>
-          <div class="card-shade"></div>
-          <div class="card-content">
+          <div class="card-shade home-shade"></div>
+
+          <div class="card-content home-card-content">
             <div class="card-top">
               <span class="project-number">PROJECT 03</span>
               <span class="status team">Team Project</span>
             </div>
 
-            <div class="card-main">
+            <div class="card-main home-card-main">
               <h3>Liquid Rocket Engine</h3>
               <p>
                 Propulsion development with SEDS UNLV, focused on real hardware,
-                test-driven iteration, and team engineering.
+                testing, and team engineering.
               </p>
+
               <div class="tags">
                 <span class="tag">Rocket Propulsion</span>
                 <span class="tag">Testing</span>
-                <span class="tag">Team Engineering</span>
               </div>
-              <div class="card-link">
-                <span>View Project</span><span>→</span>
-              </div>
+            </div>
+
+            <div class="card-link">
+              <span>View Project</span><span>→</span>
             </div>
           </div>
         </a>
 
       </div>
+
+      <div class="admin-project-actions admin-only" aria-hidden="true">
+        <button class="add-project-button" type="button">+ Add New Project</button>
+      </div>
     </section>
 
-    <section class="capabilities shell" id="capabilities">
-      <div class="section-head">
+    <section class="capabilities compact-capabilities" id="capabilities">
+      <div class="section-head compact-section-head">
         <div>
           <p class="eyebrow">What the work demonstrates</p>
           <h2>Capabilities</h2>
