@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Micro Turbojet V2 — Apogee Lab Projects</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand-link" href="index.html">
+        <img src="logo.png" alt="Apogee Lab logo">
+        <div class="brand-copy">
+          <strong>Apogee Lab</strong>
+          <span>Projects</span>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Primary navigation">
+        <a href="index.html">All Projects</a>
+        <a href="#updates">Updates</a>
+        <a href="#gallery">Gallery</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div class="breadcrumb">
+      <a href="index.html">← Back to Projects</a>
+    </div>
+
+    <section class="project-hero">
+      <div class="project-visual">
+        <div class="card-bg turbo-bg" style="position:absolute; inset:0;"></div>
+        <div class="card-shade" style="position:absolute; inset:0;"></div>
+      </div>
+
+      <aside class="project-summary">
+        <p class="eyebrow">Propulsion · Project 01</p>
+        <h1>Micro Turbojet V2</h1>
+
+        <div class="tags">
+          <span class="tag">Propulsion</span><span class="tag">Thermodynamics</span><span class="tag">Fluid Mechanics</span><span class="tag">MATLAB</span><span class="tag">CAD</span>
+        </div>
+
+        <p class="summary-text">A small centrifugal-flow turbojet being developed as a complete engineering system: cycle modeling, compressor and diffuser sizing, combustor design, turbine matching, packaging, manufacturing, and test.</p>
+
+        <div class="meta-grid">
+          <div class="meta">
+            <span>Status</span>
+            <strong>In Development</strong>
+          </div>
+          <div class="meta">
+            <span>Project</span>
+            <strong>01</strong>
+          </div>
+          <div class="meta">
+            <span>Type</span>
+            <strong>Engineering Prototype</strong>
+          </div>
+          <div class="meta">
+            <span>Documentation</span>
+            <strong>Development Log</strong>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="detail-section" id="updates">
+      <div class="detail-title">
+        <div>
+          <p class="eyebrow">Development Log</p>
+          <h2>Updates</h2>
+        </div>
+        <p>
+          The newest update is shown in full. Older versions stay compact so the page
+          remains easy to scan as the project grows.
+        </p>
+      </div>
+
+      <article class="latest-update">
+        <div class="update-copy">
+          <div class="update-label">★ Latest Version</div>
+          <h3>V2 — Design Basis & Architecture</h3>
+          <div class="update-date">Frontend prototype entry</div>
+          <p>The project was restarted as a second design iteration so that major dimensions and component choices are driven by engineering analysis rather than geometry alone. The current phase establishes the design basis, engine architecture, operating assumptions, and calculation workflow before hardware is manufactured.</p>
+        </div>
+
+        <div class="carousel-preview">
+          <div class="placeholder-image"><span>Update photo / CAD</span></div>
+          <div class="placeholder-image"><span>Update photo</span></div>
+          <div class="placeholder-image"><span>Update photo</span></div>
+        </div>
+      </article>
+
+      <div class="old-updates">
+        
+        <article class="old-update">
+          <div class="old-update-top">
+            <h4>Project Restart — V2</h4>
+            <time>Earlier update</time>
+          </div>
+          <p>Reframed the project around a calculation-driven design process, modular hardware, and documented engineering decisions.</p>
+        </article>
+        
+
+        <article class="old-update">
+          <div class="old-update-top">
+            <h4>V1 — Proof of Concept</h4>
+            <time>Earlier update</time>
+          </div>
+          <p>The first version established the basic architecture and demonstrated what needed to be improved before committing to a more rigorous build.</p>
+        </article>
+        
+      </div>
+    </section>
+
+    <section class="detail-section" id="gallery">
+      <div class="detail-title">
+        <div>
+          <p class="eyebrow">Project Media</p>
+          <h2>Gallery</h2>
+        </div>
+        <p>
+          In the final system, every uploaded project image will automatically appear here,
+          even after its update moves out of the latest-version position.
+        </p>
+      </div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item"><div class="placeholder-image"><span>Project image</span></div></div>
+        <div class="gallery-item"><div class="placeholder-image"><span>CAD / analysis</span></div></div>
+        <div class="gallery-item"><div class="placeholder-image"><span>Manufacturing / test</span></div></div>
+        <div class="gallery-item"><div class="placeholder-image"><span>Project image</span></div></div>
+        <div class="gallery-item"><div class="placeholder-image"><span>Project image</span></div></div>
+        <div class="gallery-item"><div class="placeholder-image"><span>Project image</span></div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <span>© Apogee Lab · Projects</span>
+    <div class="footer-right">
+      <a href="index.html">All Projects</a>
+      <span>·</span>
+      <button type="button" data-open-admin>Admin</button>
+    </div>
+  </footer>
+
+
+  <div class="modal" id="adminModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+      <h2 id="adminTitle">Admin Access</h2>
+      <p>Sign in to unlock editing controls on the live Projects site.</p>
+
+      <form id="adminForm">
+        <label for="adminPassword">Admin password</label>
+        <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password">
+
+        <div class="modal-actions">
+          <button id="closeAdmin" type="button">Cancel</button>
+          <button class="primary" type="submit">Sign In</button>
+        </div>
+      </form>
+
+      <p class="prototype-note" id="adminPrototypeMessage">
+        Frontend prototype: authentication is not connected yet.
+      </p>
+    </div>
+  </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>
