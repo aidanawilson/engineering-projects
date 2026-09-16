@@ -855,3 +855,60 @@ This only reveals the prototype editing controls.
 It does **not** authenticate, write data, or persist changes.
 
 When the Worker is implemented, this preview mechanism should be removed and replaced by the real `/api/admin/status` session check.
+
+
+---
+
+# Frontend v6 interaction refinements
+
+## Viewport-fixed Development Log cue
+
+The project-page scroll indicator is no longer positioned relative to the project hero.
+
+It is now fixed relative to the visitor's **browser viewport**:
+
+```text
+browser / phone / split-screen window
+              ↓
+       [ ↓  Development Log ]
+          24px from bottom
+```
+
+This means its position stays consistent on:
+
+- desktop
+- phone
+- split-screen
+- resized browser windows
+- different monitor sizes
+
+The indicator is approximately 25% smaller than the v5 version.
+
+Behavior:
+
+```text
+page loads at top
+    ↓
+scroll cue visible near bottom of viewport
+
+user clicks cue
+    ↓
+cue hides immediately
+    ↓
+page scrolls to Development Log
+
+OR
+
+user starts scrolling naturally
+    ↓
+cue hides automatically
+```
+
+Once dismissed, it stays hidden until the page is reloaded.
+
+If a project page opens already scrolled or with a URL hash such as `#updates`, the cue is hidden immediately.
+
+## Homepage refinements
+
+- Reduced the `Projects` title size.
+- Underlined the `Main Site ↗` navigation link on the Projects homepage.

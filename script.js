@@ -93,3 +93,40 @@ document.querySelectorAll("[data-prototype-save]").forEach((button) => {
     }, 1600);
   });
 });
+
+
+// =========================================================
+// V6 project-page viewport scroll cue
+// =========================================================
+
+const projectScrollCue = document.querySelector(".project-scroll-cue");
+
+if (projectScrollCue) {
+  let projectScrollCueDismissed = false;
+
+  const hideProjectScrollCue = () => {
+    if (projectScrollCueDismissed) return;
+    projectScrollCueDismissed = true;
+    projectScrollCue.classList.add("is-hidden");
+  };
+
+  // Clicking the cue hides it immediately; the existing anchor then
+  // smooth-scrolls to the Development Log.
+  projectScrollCue.addEventListener("click", hideProjectScrollCue);
+
+  // Any intentional downward scrolling hides it as well.
+  const hideCueOnScroll = () => {
+    if (window.scrollY > 8) {
+      hideProjectScrollCue();
+      window.removeEventListener("scroll", hideCueOnScroll);
+    }
+  };
+
+  window.addEventListener("scroll", hideCueOnScroll, { passive: true });
+
+  // If a page is opened directly at an anchor or restored already scrolled,
+  // do not show the cue over the content.
+  if (window.scrollY > 8 || window.location.hash) {
+    hideProjectScrollCue();
+  }
+}

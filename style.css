@@ -1529,3 +1529,88 @@ body.admin-mode .admin-toolbar {
     grid-column: auto;
   }
 }
+
+
+/* =========================================================
+   PROJECTS FRONTEND V6
+   Viewport-fixed scroll cue + small homepage refinements
+   ========================================================= */
+
+/* Slightly smaller Projects title on the homepage. */
+.projects-intro h1 {
+  font-size: clamp(2.35rem, 3.8vw, 3.75rem);
+}
+
+/* Make the Main Site nav link visually distinct. */
+.projects-home .main-site-link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/*
+  Project-page scroll cue:
+  - fixed relative to the VISITOR'S VIEWPORT, not document layout
+  - about 25% smaller than v5 (76px -> 57px)
+  - hidden by JS after either clicking or beginning to scroll
+*/
+.project-scroll-cue {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 45;
+
+  transform: translateX(-50%);
+  gap: 12px;
+  font-size: .84rem;
+  letter-spacing: .10em;
+
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+
+  transition:
+    opacity .22s ease,
+    visibility .22s ease,
+    transform .22s ease,
+    color .18s ease;
+}
+
+.project-scroll-cue.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(10px);
+}
+
+.project-scroll-circle {
+  width: 57px;
+  height: 57px;
+  font-size: 1.38rem;
+}
+
+.project-scroll-cue:hover {
+  transform: translateX(-50%) translateY(3px);
+}
+
+.project-scroll-cue.is-hidden:hover {
+  transform: translateX(-50%) translateY(10px);
+}
+
+@media (max-width: 680px) {
+  .projects-intro h1 {
+    font-size: 2.2rem;
+  }
+
+  .project-scroll-cue {
+    bottom: 18px;
+    gap: 10px;
+    font-size: .72rem;
+  }
+
+  .project-scroll-circle {
+    width: 52px;
+    height: 52px;
+    font-size: 1.25rem;
+  }
+}
