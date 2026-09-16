@@ -1172,3 +1172,129 @@ body.admin-mode .admin-only {
     font-size: 2rem;
   }
 }
+
+
+/* =========================================================
+   PROJECTS HOMEPAGE V4
+   Equal-height tiles + stronger scroll cue on project pages
+   ========================================================= */
+
+/* All homepage tiles now share the same vertical height.
+   The first tile remains full-width, but is no taller than the others. */
+.project-grid-home .featured-home,
+.project-grid-home .home-card:not(.featured-home) {
+  height: clamp(380px, 31vw, 425px);
+}
+
+/* Keep the visual hierarchy through width rather than height. */
+.project-grid-home .featured-home {
+  grid-column: 1 / -1;
+}
+
+/* Bring the flagship title up a little so the next row enters the viewport sooner. */
+.project-grid-home .featured-home .home-card-main {
+  top: 52%;
+}
+
+/* Secondary tile titles stay slightly above center as well. */
+.project-grid-home .home-card:not(.featured-home) .home-card-main {
+  top: 49%;
+}
+
+/* ---------- Project detail first-screen behavior ---------- */
+
+.project-hero {
+  position: relative;
+  padding-bottom: 58px;
+}
+
+.project-visual,
+.project-summary {
+  min-height: 455px;
+}
+
+.project-scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.82);
+  text-decoration: none;
+  font-size: .76rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  transition: color .18s ease, transform .18s ease;
+}
+
+.project-scroll-cue:hover {
+  color: #fff;
+  transform: translateX(-50%) translateY(3px);
+}
+
+.project-scroll-circle {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 50%;
+  background: rgba(255,255,255,.045);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  font-size: 1rem;
+  animation: projectScrollPulse 2.1s ease-in-out infinite;
+}
+
+@keyframes projectScrollPulse {
+  0%, 100% {
+    transform: translateY(0);
+    border-color: rgba(255,255,255,.22);
+  }
+  50% {
+    transform: translateY(5px);
+    border-color: rgba(92,167,255,.55);
+  }
+}
+
+@media (max-width: 900px) {
+  .project-grid-home .featured-home,
+  .project-grid-home .home-card:not(.featured-home) {
+    height: 350px;
+  }
+
+  .project-visual,
+  .project-summary {
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 680px) {
+  .project-grid-home .featured-home,
+  .project-grid-home .home-card:not(.featured-home) {
+    height: 325px;
+  }
+
+  .project-visual,
+  .project-summary {
+    min-height: 370px;
+  }
+
+  .project-scroll-cue {
+    font-size: .68rem;
+  }
+
+  .project-scroll-circle {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-scroll-circle {
+    animation: none;
+  }
+}

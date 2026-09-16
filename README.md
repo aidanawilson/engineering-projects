@@ -659,3 +659,43 @@ The homepage intentionally does **not** have a hero section.
 The featured project is larger, but the title is positioned so that the second row is already entering the viewport on a typical desktop display. This lets visitors immediately understand that the site contains multiple projects.
 
 The current static prototype still uses a generated visual for Turbojet and a real uploaded image for Lightsaber. In production, these card backgrounds will come from the first photo of the project's latest update.
+
+
+---
+
+# Frontend v4 interaction decisions
+
+## Equal-height homepage project tiles
+
+All homepage project cards now use the same vertical height.
+
+The flagship project remains full-width, but its importance is communicated through width and placement instead of a taller card.
+
+The intended first-screen behavior is:
+
+```text
+Header
+Compact Projects intro
+[ full first project tile ]
+
+[ approximately the upper portion of the next row is visible ]
+```
+
+This makes it visually obvious that the portfolio continues below without requiring a separate scroll indicator on the homepage.
+
+## Project-page scroll cue
+
+Individual project pages now include an explicit cue below the hero/about area:
+
+```text
+↓  DEVELOPMENT LOG
+```
+
+The cue:
+
+- is centered below the initial project hero
+- subtly animates downward
+- can be clicked
+- smooth-scrolls directly to the Development Log section
+
+The project hero was also shortened slightly so that the page does not feel like a self-contained landing screen. The goal is for visitors to understand immediately that the hero is only the beginning of the project documentation.
