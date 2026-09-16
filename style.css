@@ -1298,3 +1298,234 @@ body.admin-mode .admin-only {
     animation: none;
   }
 }
+
+
+/* =========================================================
+   PROJECTS FRONTEND V5
+   Larger project scroll cue + admin editing UI prototype
+   ========================================================= */
+
+/* Make the project-page scroll cue much more prominent. */
+.project-scroll-cue {
+  bottom: -2px;
+  gap: 16px;
+  font-size: .98rem;
+  letter-spacing: .10em;
+}
+
+.project-scroll-circle {
+  width: 76px;
+  height: 76px;
+  border-width: 1px;
+  font-size: 1.8rem;
+  box-shadow:
+    0 14px 38px rgba(0,0,0,.32),
+    0 0 34px rgba(92,167,255,.10);
+}
+
+.project-scroll-cue:hover .project-scroll-circle {
+  border-color: rgba(92,167,255,.72);
+  box-shadow:
+    0 16px 42px rgba(0,0,0,.34),
+    0 0 42px rgba(92,167,255,.18);
+}
+
+/* Hidden until admin preview/authenticated admin mode. */
+.admin-toolbar {
+  display: none;
+  margin: 18px 0 0;
+  padding: 12px;
+  border: 1px solid rgba(92,167,255,.28);
+  border-radius: 14px;
+  background: rgba(19,31,45,.72);
+  backdrop-filter: blur(10px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body.admin-mode .admin-toolbar {
+  display: flex;
+}
+
+.admin-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-pill {
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #cfe5ff;
+  background: rgba(92,167,255,.12);
+  border: 1px solid rgba(92,167,255,.24);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.admin-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-toolbar button,
+.admin-toolbar .admin-action {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+  color: white;
+  background: #162231;
+  cursor: pointer;
+}
+
+.admin-toolbar button:hover,
+.admin-toolbar .admin-action:hover {
+  border-color: rgba(92,167,255,.45);
+  background: #1a2a3d;
+}
+
+.admin-toolbar .primary {
+  border-color: rgba(92,167,255,.40);
+  background: #155da9;
+}
+
+/* Generic edit/create modal used only as a frontend prototype for now. */
+.editor-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: none;
+  place-items: center;
+  padding: 22px;
+  background: rgba(2,5,8,.80);
+  backdrop-filter: blur(10px);
+}
+
+.editor-modal.open {
+  display: grid;
+}
+
+.editor-card {
+  width: min(720px, 100%);
+  max-height: min(88vh, 860px);
+  overflow: auto;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: linear-gradient(180deg, #141d28, #0d131b);
+  box-shadow: 0 34px 100px rgba(0,0,0,.52);
+}
+
+.editor-card h2 {
+  margin: 0 0 6px;
+}
+
+.editor-card > p {
+  margin: 0 0 20px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.editor-field.full {
+  grid-column: 1 / -1;
+}
+
+.editor-field label {
+  color: var(--muted);
+  font-size: .72rem;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.editor-field input,
+.editor-field textarea,
+.editor-field select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  outline: none;
+  color: white;
+  background: #090f16;
+}
+
+.editor-field textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.editor-field input:focus,
+.editor-field textarea:focus,
+.editor-field select:focus {
+  border-color: rgba(92,167,255,.55);
+  box-shadow: 0 0 0 3px rgba(92,167,255,.10);
+}
+
+.editor-help {
+  color: var(--soft);
+  font-size: .76rem;
+  line-height: 1.45;
+}
+
+.editor-actions {
+  margin-top: 18px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.editor-actions button {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 13px;
+  color: white;
+  background: #151f2b;
+  cursor: pointer;
+}
+
+.editor-actions .primary {
+  border-color: rgba(92,167,255,.40);
+  background: #155da9;
+}
+
+@media (max-width: 680px) {
+  .project-scroll-cue {
+    gap: 12px;
+    font-size: .82rem;
+  }
+
+  .project-scroll-circle {
+    width: 62px;
+    height: 62px;
+    font-size: 1.45rem;
+  }
+
+  .admin-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editor-field.full {
+    grid-column: auto;
+  }
+}

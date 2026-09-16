@@ -699,3 +699,159 @@ The cue:
 - smooth-scrolls directly to the Development Log section
 
 The project hero was also shortened slightly so that the page does not feel like a self-contained landing screen. The goal is for visitors to understand immediately that the hero is only the beginning of the project documentation.
+
+
+---
+
+# Frontend v5 admin-editing requirements
+
+## Larger project-page scroll cue
+
+The Development Log scroll cue on project pages is now intentionally prominent:
+
+```text
+        ↓
+DEVELOPMENT LOG
+```
+
+The circular arrow is roughly twice the previous size so visitors are much less likely to mistake the hero/about block for the entire project page.
+
+---
+
+# Editable project fields
+
+The future admin system must allow an existing project to be edited in place.
+
+Editing is not limited to changing status or adding updates. The administrator must be able to correct typos or revise any public-facing project metadata without touching source code.
+
+Minimum editable project fields:
+
+```text
+Project title
+Homepage / tile description
+Full project-page About description
+Project status
+Tags / disciplines
+Sort order
+Fallback / hero image if needed
+Slug, with safeguards
+```
+
+The homepage description and full About description are separate fields.
+
+Example:
+
+```text
+Homepage description
+--------------------
+Short, 1–3 sentence summary designed to fit cleanly on a tile.
+
+
+Full About description
+----------------------
+Longer explanation shown inside the project's detail page.
+```
+
+---
+
+# Project status
+
+Status must be editable from the project editor.
+
+Initial status vocabulary:
+
+```text
+In Development
+Proof of Concept
+Prototype
+Functional Prototype
+Complete
+Team Project
+Paused
+Archived
+```
+
+This list can be changed later if needed.
+
+The status value controls the status pill shown on the project tile and inside the project page.
+
+The database should store status as data rather than baking the words into HTML.
+
+---
+
+# Admin project editor
+
+Once authenticated, every project detail page should expose:
+
+```text
+[ Edit Project ]   [ + New Update ]
+```
+
+`Edit Project` should open an inline modal/editor containing all editable project fields.
+
+Saving should update the existing D1 project row.
+
+It should **not** create a replacement project just because text was edited.
+
+That distinction matters for keeping:
+
+```text
+project_id
+updates
+images
+gallery
+URLs
+```
+
+attached to the same project over its lifetime.
+
+---
+
+# Add New Project
+
+The Projects homepage should expose this only in authenticated admin mode:
+
+```text
++ Add New Project
+```
+
+Required creation fields in the first backend version:
+
+```text
+Project title
+Project status
+Homepage description
+Full About description
+Tags / disciplines
+```
+
+Additional fields such as slug, start date, sort order, and fallback image may be generated automatically or exposed in an advanced section.
+
+Creating a project inserts one new row into the single shared Projects D1 database.
+
+No new database, Worker, or schema is created per project.
+
+---
+
+# Frontend-only admin preview
+
+Before the backend exists, the static frontend includes a hidden admin-interface preview.
+
+To inspect it locally or on a test deployment, append:
+
+```text
+?admin=preview
+```
+
+For example:
+
+```text
+projects.apogeelab.org/?admin=preview
+projects.apogeelab.org/turbojet.html?admin=preview
+```
+
+This only reveals the prototype editing controls.
+
+It does **not** authenticate, write data, or persist changes.
+
+When the Worker is implemented, this preview mechanism should be removed and replaced by the real `/api/admin/status` session check.

@@ -32,6 +32,18 @@
       <a href="index.html">← Back to Projects</a>
     </div>
 
+    <div class="admin-toolbar admin-only" aria-hidden="true">
+      <div class="admin-toolbar-left">
+        <span class="admin-pill">Admin Mode</span>
+        <span>Editing Liquid Rocket Engine</span>
+      </div>
+
+      <div class="admin-toolbar-actions">
+        <button type="button" data-open-editor="editProjectModal">Edit Project</button>
+        <button class="primary" type="button">+ New Update</button>
+      </div>
+    </div>
+
     <section class="project-hero">
       <div class="project-visual">
         <div class="card-bg rocket-bg" style="position:absolute; inset:0;"></div>
@@ -177,6 +189,59 @@
     </div>
   </div>
 
+
+  <div class="editor-modal" id="editProjectModal" aria-hidden="true">
+    <div class="editor-card" role="dialog" aria-modal="true" aria-labelledby="editProjectTitle">
+      <h2 id="editProjectTitle">Edit Project</h2>
+      <p>
+        Every public-facing project field will be editable here, including typo corrections and status changes.
+      </p>
+
+      <div class="editor-grid">
+        <div class="editor-field">
+          <label for="editProjectName">Project title</label>
+          <input id="editProjectName" type="text" value="Liquid Rocket Engine">
+        </div>
+
+        <div class="editor-field">
+          <label for="editProjectStatus">Project status</label>
+          <select id="editProjectStatus">
+<option>In Development</option>
+<option>Proof of Concept</option>
+<option>Prototype</option>
+<option>Functional Prototype</option>
+<option>Complete</option>
+<option selected>Team Project</option>
+<option>Paused</option>
+<option>Archived</option>
+</select>
+        </div>
+
+        <div class="editor-field full">
+          <label for="editProjectHomeDescription">Homepage description</label>
+          <textarea id="editProjectHomeDescription">Propulsion development with SEDS UNLV, focused on real hardware, testing, and team engineering.</textarea>
+        </div>
+
+        <div class="editor-field full">
+          <label for="editProjectAbout">Full project description / About</label>
+          <textarea id="editProjectAbout">A team propulsion project centered on the design, fabrication, testing, and iteration of liquid rocket hardware. This page is structured to document individual contributions as the project develops.</textarea>
+        </div>
+
+        <div class="editor-field full">
+          <label for="editProjectTags">Tags</label>
+          <input id="editProjectTags" type="text" value="Rocket Propulsion, Testing, Team Engineering, Hardware">
+          <div class="editor-help">
+            In production this editor will update the existing D1 project row rather than creating a replacement.
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button type="button" data-close-editor="editProjectModal">Cancel</button>
+        <button class="primary" type="button" data-prototype-save>Save Changes</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

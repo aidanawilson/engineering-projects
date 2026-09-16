@@ -133,8 +133,15 @@
 
       </div>
 
-      <div class="admin-project-actions admin-only" aria-hidden="true">
-        <button class="add-project-button" type="button">+ Add New Project</button>
+      <div class="admin-toolbar admin-only" aria-hidden="true">
+        <div class="admin-toolbar-left">
+          <span class="admin-pill">Admin Mode</span>
+          <span>Manage the Projects portfolio</span>
+        </div>
+
+        <div class="admin-toolbar-actions">
+          <button class="primary" type="button" data-open-editor="newProjectModal">+ Add New Project</button>
+        </div>
       </div>
     </section>
 
@@ -205,6 +212,59 @@
     </div>
   </div>
 
+
+  <div class="editor-modal" id="newProjectModal" aria-hidden="true">
+    <div class="editor-card" role="dialog" aria-modal="true" aria-labelledby="newProjectTitle">
+      <h2 id="newProjectTitle">Add New Project</h2>
+      <p>
+        Frontend prototype of the fields that will be saved to D1 once the Projects backend is connected.
+      </p>
+
+      <div class="editor-grid">
+        <div class="editor-field">
+          <label for="newProjectName">Project title</label>
+          <input id="newProjectName" type="text" placeholder="Micro Turbojet V3">
+        </div>
+
+        <div class="editor-field">
+          <label for="newProjectStatus">Project status</label>
+          <select id="newProjectStatus">
+<option>In Development</option>
+<option>Proof of Concept</option>
+<option>Prototype</option>
+<option>Functional Prototype</option>
+<option>Complete</option>
+<option>Team Project</option>
+<option>Paused</option>
+<option>Archived</option>
+</select>
+        </div>
+
+        <div class="editor-field full">
+          <label for="newProjectHomeDescription">Homepage description</label>
+          <textarea id="newProjectHomeDescription" placeholder="Short description shown on the main Projects tile."></textarea>
+        </div>
+
+        <div class="editor-field full">
+          <label for="newProjectAbout">Full project description / About</label>
+          <textarea id="newProjectAbout" placeholder="Longer description shown inside the project page."></textarea>
+        </div>
+
+        <div class="editor-field full">
+          <label for="newProjectTags">Tags</label>
+          <input id="newProjectTags" type="text" placeholder="Propulsion, Thermodynamics, CAD, MATLAB">
+          <div class="editor-help">
+            Tags entered here become the discipline pills shown on the project tile and project page.
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-actions">
+        <button type="button" data-close-editor="newProjectModal">Cancel</button>
+        <button class="primary" type="button" data-prototype-save>Create Project</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
