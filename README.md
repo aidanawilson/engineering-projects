@@ -1,14 +1,16 @@
-# Apogee Lab Projects — Frontend v1
+# Apogee Lab Projects — Frontend V1
 
-Static frontend prototype for:
+Frontend V1 for:
 
 `projects.apogeelab.org`
 
-This version is intentionally simple and GitHub/Cloudflare-Pages friendly. There is **no backend connected yet**. The purpose of v1 is to finalize the visual structure before creating the Worker, D1 database, R2 image storage, and live admin editing system.
+This is the approved frontend structure that the backend will now be built around.
+
+The site is intentionally framework-free and can be hosted directly through GitHub + Cloudflare Pages.
 
 ---
 
-## Current file structure
+## Repository structure
 
 ```text
 /
@@ -24,57 +26,65 @@ This version is intentionally simple and GitHub/Cloudflare-Pages friendly. There
 └── README.md
 ```
 
-Everything is in the repository root on purpose. No build system, framework, package manager, or nested asset structure is required.
+The individual project HTML files are temporary static implementations used by Frontend V1. Once project data is loaded dynamically from D1, a reusable project-page template can replace the hard-coded project pages.
 
 ---
 
-## Current frontend behavior
+# Frontend structure
 
-### Projects homepage
+## Projects homepage
 
-`index.html`
-
-The homepage contains:
-
-1. Apogee Lab / Projects header
-2. Intro / engineering portfolio hero
-3. Featured Micro Turbojet V2 card
-4. Custom Lightsaber card
-5. Liquid Rocket Engine card
-6. Capabilities section
-7. Footer with an Admin button
-
-The project cards use the same visual language as the main Apogee Lab homepage, but with more engineering-specific metadata:
-
-- project number
-- development status
-- discipline tags
-- engineering-focused descriptions
-
-### Individual project pages
-
-The current static pages are:
-
-- `turbojet.html`
-- `lightsaber.html`
-- `rocket.html`
-
-Each project page follows the planned production layout:
+The homepage is tile-first.
 
 ```text
+[ Apogee Lab / Projects header ]
+
+Projects                         short explanation
+
+[           featured project tile            ]
+
+[ second project ]        [ third project ]
+
+[ additional projects continue below ]
+```
+
+Key behavior:
+
+- no large hero section
+- project tiles are the primary focus immediately after page load
+- all project tiles use the same vertical height
+- the featured project is emphasized by width and placement rather than extra height
+- card backgrounds remain blurred enough for readable overlay text
+- project cards show:
+  - project number
+  - project status
+  - title
+  - homepage description
+  - selected tags
+- the main-site link in the header is underlined
+
+---
+
+## Individual project page
+
+Each project page is structured as:
+
+```text
+Header
+
 Project hero
-├── large visual / hero image
-└── project information panel
+├── large visual / image
+└── project summary
     ├── title
     ├── tags
-    ├── about text
+    ├── About description
     ├── status
     └── metadata
 
 Development Log
 ├── ★ Latest Version
 │   ├── title
-│   ├── full text
+│   ├── full update text
 │   └── image carousel
 │
 └── Previous Updates
@@ -83,119 +93,115 @@ Development Log
     └── ...
 
 Gallery
-└── all uploaded project images
+└── all project images
 ```
 
-The newest update is intentionally much larger than previous updates.
+The newest update is visually emphasized and may show its attached image carousel.
 
-The long-term rule is:
-
-- newest update = full text + image carousel
-- older updates = compact text entries
-- images from every update remain available in the gallery
+Older updates remain compact so the development history stays readable as projects grow.
 
 ---
 
-# Planned production architecture
+# Project-page scroll cue
 
-The final system is planned as four pieces:
+Project pages include a fixed Development Log cue near the bottom of the visitor's viewport.
+
+Behavior:
+
+```text
+page loads
+    ↓
+cue remains visible
+
+visitor scrolls a little
+    ↓
+cue remains visible
+
+visitor clicks the cue
+    ↓
+page scrolls to Development Log
+    ↓
+cue remains visible
+
+visitor reaches about 50% through Updates
+    ↓
+cue fades away
+```
+
+The threshold uses the center of the visitor's viewport relative to the midpoint of the Updates section so the behavior remains consistent across phones, laptops, split-screen windows, and larger displays.
+
+---
+
+# Planned backend architecture
+
+Frontend V1 will connect to a new, independent Projects backend.
 
 ```text
 projects.apogeelab.org
         │
         ├── Cloudflare Pages
-        │     public frontend
+        │     frontend
         │
         ├── Projects Worker
         │     API + admin authentication
         │
-        ├── D1 database
-        │     projects + posts + image metadata
+        ├── Projects D1 database
+        │     projects + updates + image metadata
         │
         └── R2 bucket
               project image files
 ```
 
-The Projects backend will be separate from Replay Trader.
+The Projects backend is separate from Replay Trader.
 
-The Projects Worker may use the **same admin password value** as Replay Trader, but it will have its own Cloudflare `ADMIN_PASSWORD` secret and its own admin session cookie.
+The Projects Worker can use the same **password value** as Replay Trader by creating its own `ADMIN_PASSWORD` Cloudflare secret with the same value.
 
-The public Projects site will **not** be password protected.
+The Projects site itself remains completely public.
+
+Only editing actions require administrator authentication.
 
 ---
 
-# Planned admin experience
+# Inline admin mode
 
-There will not be a separate admin website.
+Admin is integrated into the public site rather than hosted as a separate admin website.
 
-The footer of the public site contains:
+The footer contains:
 
 ```text
 Admin
 ```
 
-Clicking it will open a login modal on the same page.
+Clicking Admin opens a login modal on the current page.
 
-After successful authentication, the original public site will enter an editing state.
-
-Example:
+After successful authentication, the same website enters admin mode and exposes controls such as:
 
 ```text
-PUBLIC
-
-Micro Turbojet V2
-
-Development Log
-V2.3 — Diffuser Redesign
+Projects homepage
+-----------------
+[ + Add New Project ]
 
 
-ADMIN MODE
+Project page
+------------
+[ Edit Project ]   [ + New Update ]
 
-Micro Turbojet V2                 [ Edit Project ]
+Latest update
+[ Edit ] [ Delete ]
 
-Development Log                   [ + New Update ]
-
-V2.3 — Diffuser Redesign          [ Edit ] [ Delete ]
-
-Gallery                           [ + Upload Images ]
+Gallery
+[ + Upload Images ]
 ```
 
-The frontend may show or hide controls, but it will **never be responsible for deciding whether an edit is authorized**.
+The browser may display the controls, but authorization is always decided by the Worker.
 
-Every create/edit/delete API request must be independently validated by the Worker.
+Every create, edit, delete, or upload request must independently verify the admin session.
 
 ---
 
-# Planned admin authentication
+# Planned authentication
 
-The Projects Worker will use a design similar to Replay Trader's admin authentication.
-
-Planned flow:
-
-```text
-Click Admin
-    ↓
-enter password in modal
-    ↓
-POST /api/admin/login
-    ↓
-Worker compares password to ADMIN_PASSWORD secret
-    ↓
-signed admin session cookie issued
-    ↓
-frontend checks /api/admin/status
-    ↓
-editing controls become visible
-```
-
-Planned cookie properties:
-
-```text
-HttpOnly
-Secure
-SameSite=Lax
-short-lived session (approximately 12 hours)
-```
+The Projects Worker will use a separate signed admin session.
 
 Planned endpoints:
 
@@ -205,369 +211,30 @@ POST /api/admin/login
 POST /api/admin/logout
 ```
 
----
-
-# Planned D1 database
-
-A new Projects D1 database is recommended.
-
-Initial schema concept:
+Planned session cookie:
 
 ```text
-projects
---------
-id
-slug
-name
-subtitle
-description
-status
-start_date
-hero_image_key
-sort_order
-created_at
-updated_at
-
-
-project_updates
----------------
-id
-project_id
-title
-version_label
-body
-created_at
-updated_at
-
-
-project_images
---------------
-id
-project_id
-update_id
-r2_key
-caption
-sort_order
-created_at
+HttpOnly
+Secure
+SameSite=Lax
+approximately 12-hour lifetime
 ```
 
-The exact schema should be finalized after the frontend fields are settled.
+`ADMIN_PASSWORD` is stored only as a private Cloudflare Worker secret.
+
+The frontend must never contain:
+
+- the admin password
+- password hashes
+- session-signing secrets
 
 ---
 
-# Planned R2 image storage
+# One shared Projects database
 
-Actual images should not be stored inside D1.
+All engineering projects live in one D1 database.
 
-One R2 bucket will store project media.
-
-Possible bucket name:
-
-```text
-apogee-project-images
-```
-
-Conceptually:
-
-```text
-turbojet/
-    compressor-cad.webp
-    diffuser-v2.webp
-    prototype-test.jpg
-
-lightsaber/
-    electronics.webp
-    hilt-cad.webp
-
-rocket/
-    test-stand.webp
-```
-
-D1 stores the image metadata and R2 object key.
-
-R2 stores the actual file.
-
----
-
-# Planned project API
-
-Public read endpoints:
-
-```text
-GET /api/projects
-GET /api/projects/:slug
-GET /api/projects/:slug/updates
-GET /api/projects/:slug/images
-```
-
-Admin-only write endpoints:
-
-```text
-POST   /api/projects
-PUT    /api/projects/:id
-DELETE /api/projects/:id
-
-POST   /api/projects/:id/updates
-PUT    /api/updates/:id
-DELETE /api/updates/:id
-
-POST   /api/projects/:id/images
-DELETE /api/images/:id
-```
-
-Every write endpoint must validate the admin session on the Worker.
-
----
-
-# Planned image behavior
-
-When an image is attached to the newest development update:
-
-1. the file is uploaded to R2
-2. D1 records the image
-3. the image appears in the newest update carousel
-4. the image also appears in the full project gallery
-
-When that update becomes old:
-
-- its image carousel is no longer shown in the compact development-log entry
-- its images remain in the project gallery
-
-Images are never lost simply because an update is no longer the newest version.
-
----
-
-# Frontend-to-backend migration plan
-
-## Phase 1 — Frontend prototype
-
-Current phase.
-
-- finalize homepage layout
-- finalize project-page layout
-- finalize development-log behavior
-- finalize gallery behavior
-- finalize admin editing UI appearance
-
-No database yet.
-
-## Phase 2 — Backend foundation
-
-Create:
-
-- Projects Worker
-- Projects D1
-- Projects R2 bucket
-- `ADMIN_PASSWORD` Worker secret
-- admin-session signing code
-
-## Phase 3 — Public API
-
-Move project information from static HTML into D1.
-
-The frontend will begin loading data from the Worker.
-
-## Phase 4 — Inline admin mode
-
-Connect:
-
-- login modal
-- admin status check
-- Edit Project
-- Add Update
-- Edit Update
-- Delete Update
-- image upload
-- image delete
-- logout
-
-## Phase 5 — Polish
-
-Possible later additions:
-
-- drag-and-drop gallery ordering
-- image captions
-- image lightbox
-- project filtering
-- project archive
-- project-specific engineering tags
-- resume link
-- GitHub links
-- automatic thumbnail generation / image compression
-- draft posts before publishing
-
----
-
-# Important design rule
-
-The Projects site is intended to show **engineering process**, not just finished objects.
-
-A project should make it easy to understand:
-
-```text
-Problem
-↓
-Requirements / constraints
-↓
-Analysis
-↓
-Design decision
-↓
-Prototype
-↓
-Test
-↓
-Failure / unexpected result
-↓
-Revision
-↓
-Current result
-```
-
-The development log is therefore part of the engineering portfolio itself, not merely a blog feature.
-
----
-
-# Deploying this frontend now
-
-This version can already be hosted as a static site.
-
-For a GitHub repository connected to Cloudflare Pages, place all files directly in the repository root and use the normal static Pages deployment.
-
-No build command is required.
-
-The production backend should be added only after the frontend structure is approved.
-
-
----
-
-# Frontend v2 homepage decisions
-
-The Projects homepage is now intentionally **tile-first**.
-
-There is no large hero/title section. The sticky site header is the only top-level introduction, and the project cards begin immediately underneath it.
-
-Desktop target:
-
-```text
-[ Apogee Lab / Projects header ]
-
-[ Turbojet ] [ Lightsaber ] [ Rocket ]
-
-...additional project cards...
-```
-
-The cards are intentionally shorter than the original v1 cards and use smaller titles positioned slightly above the vertical center. The goal is that a typical desktop visitor can immediately see the names of at least three projects without scrolling.
-
----
-
-# Dynamic project tile image rule
-
-This is now a required backend behavior.
-
-For every project:
-
-```text
-Newest project update
-        ↓
-photos attached to update
-        ↓
-first photo in update order
-        ↓
-AUTOMATIC PROJECT TILE BACKGROUND
-```
-
-Example:
-
-```text
-Turbojet V2.4 update
-
-1. compressor-test.jpg
-2. diffuser-cad.webp
-3. assembly.jpg
-```
-
-The tile for Turbojet automatically uses:
-
-```text
-compressor-test.jpg
-```
-
-If a newer update is published:
-
-```text
-Turbojet V2.5 update
-
-1. running-engine.jpg
-2. nozzle-test.jpg
-```
-
-the tile automatically changes to:
-
-```text
-running-engine.jpg
-```
-
-No separate manual "tile image" upload should be required for normal use.
-
-Possible fallback hierarchy:
-
-```text
-1. first image on newest update
-2. project's manually selected fallback/hero image
-3. generated/default project placeholder
-```
-
-The backend should therefore preserve **image ordering inside each update**.
-
-The `project_images` table should include a sort-order field.
-
-Recommended query concept:
-
-```text
-latest update for project
-    → first image by sort_order
-    → use as tile image
-```
-
----
-
-# Adding a completely new project
-
-Admin mode will eventually include:
-
-```text
-+ Add New Project
-```
-
-on the Projects homepage.
-
-This is already represented in the v2 frontend as a hidden admin-only control.
-
-After the backend is connected, clicking it should open a project editor with fields such as:
-
-```text
-Project name
-Slug
-Short homepage description
-Full about text
-Status
-Start date
-Tags / disciplines
-Initial hero/fallback image
-Sort order
-```
-
-Publishing the project creates a new row in the shared `projects` table.
-
-A new project does **not** require:
-
-- a new D1 database
-- a new Worker
-- a new table set
-- new source-code page files
-
-The site is planned around one Projects database containing all projects.
+A new project does **not** receive its own database or tables.
 
 Conceptually:
 
@@ -582,183 +249,101 @@ projects
 ...
 ```
 
-Related tables use `project_id` to associate their content with the correct project.
+Updates and images reference the project through `project_id`.
+
+---
+
+# Planned D1 schema
+
+## projects
 
 ```text
-project_updates
----------------
+id
+slug
+name
+home_description
+about_description
+status
+start_date
+fallback_image_key
+sort_order
+created_at
+updated_at
+```
+
+## project_updates
+
+```text
 id
 project_id
-...
+title
+version_label
+body
+created_at
+updated_at
+```
 
-project_images
---------------
+## project_images
+
+```text
 id
 project_id
 update_id
-...
+r2_key
+caption
+sort_order
+created_at
 ```
 
-This means the admin interface can create an unlimited number of projects using the same database structure.
+Exact schema details can be adjusted during backend implementation, but this relationship should remain:
+
+```text
+project
+   ├── many updates
+   └── many images
+
+update
+   └── many images
+```
 
 ---
 
-# Important production change from the current static prototype
+# Editable project information
 
-The current v2 repo still contains:
+Admin mode must allow an existing project to be edited in place.
 
-```text
-turbojet.html
-lightsaber.html
-rocket.html
-```
-
-because the backend does not exist yet.
-
-Once the dynamic backend is implemented, individual hard-coded HTML project files should no longer be required.
-
-A production approach may use a single reusable page such as:
-
-```text
-project.html?slug=micro-turbojet-v2
-```
-
-or route-based handling such as:
-
-```text
-projects.apogeelab.org/project/micro-turbojet-v2
-```
-
-The frontend will fetch the correct project record from the Projects API and render the same reusable page template.
-
-That is what makes "+ Add New Project" possible without editing GitHub every time.
-
-
----
-
-# Frontend v3 homepage layout
-
-The uploaded visual reference is now the homepage target.
-
-The homepage hierarchy is:
-
-```text
-Sticky site header
-
-Projects          short explanation
-
-[      featured project / flagship      ]
-
-[ second project ] [ third project ]
-
-[ additional projects continue below ]
-```
-
-The homepage intentionally does **not** have a hero section.
-
-The featured project is larger, but the title is positioned so that the second row is already entering the viewport on a typical desktop display. This lets visitors immediately understand that the site contains multiple projects.
-
-The current static prototype still uses a generated visual for Turbojet and a real uploaded image for Lightsaber. In production, these card backgrounds will come from the first photo of the project's latest update.
-
-
----
-
-# Frontend v4 interaction decisions
-
-## Equal-height homepage project tiles
-
-All homepage project cards now use the same vertical height.
-
-The flagship project remains full-width, but its importance is communicated through width and placement instead of a taller card.
-
-The intended first-screen behavior is:
-
-```text
-Header
-Compact Projects intro
-[ full first project tile ]
-
-[ approximately the upper portion of the next row is visible ]
-```
-
-This makes it visually obvious that the portfolio continues below without requiring a separate scroll indicator on the homepage.
-
-## Project-page scroll cue
-
-Individual project pages now include an explicit cue below the hero/about area:
-
-```text
-↓  DEVELOPMENT LOG
-```
-
-The cue:
-
-- is centered below the initial project hero
-- subtly animates downward
-- can be clicked
-- smooth-scrolls directly to the Development Log section
-
-The project hero was also shortened slightly so that the page does not feel like a self-contained landing screen. The goal is for visitors to understand immediately that the hero is only the beginning of the project documentation.
-
-
----
-
-# Frontend v5 admin-editing requirements
-
-## Larger project-page scroll cue
-
-The Development Log scroll cue on project pages is now intentionally prominent:
-
-```text
-        ↓
-DEVELOPMENT LOG
-```
-
-The circular arrow is roughly twice the previous size so visitors are much less likely to mistake the hero/about block for the entire project page.
-
----
-
-# Editable project fields
-
-The future admin system must allow an existing project to be edited in place.
-
-Editing is not limited to changing status or adding updates. The administrator must be able to correct typos or revise any public-facing project metadata without touching source code.
-
-Minimum editable project fields:
+Minimum editable fields:
 
 ```text
 Project title
 Homepage / tile description
-Full project-page About description
+Full About description
 Project status
 Tags / disciplines
 Sort order
-Fallback / hero image if needed
+Fallback / hero image
 Slug, with safeguards
 ```
 
-The homepage description and full About description are separate fields.
+Editing a typo or changing project information updates the same existing D1 project row.
 
-Example:
+It must not create a replacement project, because the existing:
 
 ```text
-Homepage description
---------------------
-Short, 1–3 sentence summary designed to fit cleanly on a tile.
-
-
-Full About description
-----------------------
-Longer explanation shown inside the project's detail page.
+project_id
+updates
+images
+gallery
+URL relationship
 ```
+
+must remain intact.
 
 ---
 
 # Project status
 
-Status must be editable from the project editor.
-
-Initial status vocabulary:
+Initial status options:
 
 ```text
 In Development
@@ -771,51 +356,19 @@ Paused
 Archived
 ```
 
-This list can be changed later if needed.
-
-The status value controls the status pill shown on the project tile and inside the project page.
-
-The database should store status as data rather than baking the words into HTML.
-
----
-
-# Admin project editor
-
-Once authenticated, every project detail page should expose:
-
-```text
-[ Edit Project ]   [ + New Update ]
-```
-
-`Edit Project` should open an inline modal/editor containing all editable project fields.
-
-Saving should update the existing D1 project row.
-
-It should **not** create a replacement project just because text was edited.
-
-That distinction matters for keeping:
-
-```text
-project_id
-updates
-images
-gallery
-URLs
-```
-
-attached to the same project over its lifetime.
+The status is stored as project data and controls the status badge shown on the homepage and project page.
 
 ---
 
 # Add New Project
 
-The Projects homepage should expose this only in authenticated admin mode:
+Authenticated admin mode will provide:
 
 ```text
 + Add New Project
 ```
 
-Required creation fields in the first backend version:
+Initial creation fields:
 
 ```text
 Project title
@@ -825,90 +378,169 @@ Full About description
 Tags / disciplines
 ```
 
-Additional fields such as slug, start date, sort order, and fallback image may be generated automatically or exposed in an advanced section.
+Additional fields may include:
 
-Creating a project inserts one new row into the single shared Projects D1 database.
+```text
+slug
+start date
+sort order
+fallback image
+```
 
-No new database, Worker, or schema is created per project.
+Creating a new project inserts a row into the shared `projects` table.
+
+No code change or GitHub deployment should be required to add a project once the backend is complete.
 
 ---
 
-# Frontend-only admin preview
+# Dynamic homepage tile image
 
-Before the backend exists, the static frontend includes a hidden admin-interface preview.
+The project tile image will update automatically from development-log content.
 
-To inspect it locally or on a test deployment, append:
-
-```text
-?admin=preview
-```
-
-For example:
+Required rule:
 
 ```text
-projects.apogeelab.org/?admin=preview
-projects.apogeelab.org/turbojet.html?admin=preview
+newest project update
+        ↓
+photos attached to update
+        ↓
+first photo by image sort order
+        ↓
+project homepage tile background
 ```
 
-This only reveals the prototype editing controls.
+Example:
 
-It does **not** authenticate, write data, or persist changes.
+```text
+V2.5 update
 
-When the Worker is implemented, this preview mechanism should be removed and replaced by the real `/api/admin/status` session check.
+1. running-engine.jpg
+2. nozzle-test.jpg
+3. assembly.jpg
+```
 
+The project's homepage tile automatically uses:
+
+```text
+running-engine.jpg
+```
+
+When a newer update is published with images, its first image automatically becomes the new tile background.
+
+Fallback hierarchy:
+
+```text
+1. first image from newest update
+2. project fallback / hero image
+3. default project visual
+```
+
+Image ordering must therefore be preserved in D1.
 
 ---
 
-# Frontend v6 interaction refinements
+# Development-log image behavior
 
-## Viewport-fixed Development Log cue
+When images are attached to the newest update:
 
-The project-page scroll indicator is no longer positioned relative to the project hero.
+1. files are uploaded to R2
+2. D1 records the image metadata and order
+3. images appear in the newest update carousel
+4. images also appear in the full project gallery
 
-It is now fixed relative to the visitor's **browser viewport**:
+When that update is no longer the newest:
 
-```text
-browser / phone / split-screen window
-              ↓
-       [ ↓  Development Log ]
-          24px from bottom
-```
+- the old update becomes compact
+- its carousel is not shown in the main log
+- the images remain in the Gallery
 
-This means its position stays consistent on:
+---
 
-- desktop
-- phone
-- split-screen
-- resized browser windows
-- different monitor sizes
+# R2 storage
 
-The indicator is approximately 25% smaller than the v5 version.
+Actual image files should live in an R2 bucket, not in D1.
 
-Behavior:
+Possible bucket:
 
 ```text
-page loads at top
-    ↓
-scroll cue visible near bottom of viewport
-
-user clicks cue
-    ↓
-cue hides immediately
-    ↓
-page scrolls to Development Log
-
-OR
-
-user starts scrolling naturally
-    ↓
-cue hides automatically
+apogee-project-images
 ```
 
-Once dismissed, it stays hidden until the page is reloaded.
+Conceptual object layout:
 
-If a project page opens already scrolled or with a URL hash such as `#updates`, the cue is hidden immediately.
+```text
+turbojet/
+    compressor-cad.webp
+    diffuser-v2.webp
+    test-run.jpg
 
-## Homepage refinements
+lightsaber/
+    electronics.webp
+    hilt-cad.webp
 
-- Reduced the `Projects` title size.
-- Underlined the `Main Site ↗` navigation link on the Projects homepage.
+rocket/
+    test-stand.webp
+```
+
+D1 stores image metadata and the corresponding R2 object key.
+
+---
+
+# Planned API
+
+## Public reads
+
+```text
+GET /api/projects
+GET /api/projects/:slug
+GET /api/projects/:slug/updates
+GET /api/projects/:slug/images
+```
+
+## Admin-only project writes
+
+```text
+POST   /api/projects
+PUT    /api/projects/:id
+DELETE /api/projects/:id
+```
+
+## Admin-only update writes
+
+```text
+POST   /api/projects/:id/updates
+PUT    /api/updates/:id
+DELETE /api/updates/:id
+```
+
+## Admin-only image writes
+
+```text
+POST   /api/projects/:id/images
+DELETE /api/images/:id
+```
+
+All write endpoints must validate the administrator session on the Worker.
+
+---
+
+# Backend implementation order
+
+Recommended next steps:
+
+```text
+1. Create Projects Worker
+2. Create Projects D1 database
+3. Create R2 image bucket
+4. Add ADMIN_PASSWORD Worker secret
+5. Implement admin session endpoints
+6. Create D1 tables
+7. Implement public project read API
+8. Convert frontend project data from static HTML to API data
+9. Connect inline Edit Project / Add Project controls
+10. Implement project updates
+11. Implement image uploads and gallery
+12. Remove hard-coded individual project HTML files
+```
+
+Frontend V1 is the visual and interaction baseline for that implementation.

@@ -33,28 +33,10 @@ if (adminModal) {
 if (adminForm) {
   adminForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const message = document.getElementById("adminPrototypeMessage");
-    if (message) {
-      message.textContent = "Frontend prototype only — login will be connected to the Projects Worker in the backend phase.";
-    }
+    // Backend authentication will be connected in the next implementation phase.
   });
 }
 
-
-// =========================================================
-// Frontend-only admin UI preview
-// =========================================================
-// Until the Worker is connected, append ?admin=preview to any
-// Projects URL to preview the inline admin editing controls.
-// This does NOT authenticate or persist data.
-
-const params = new URLSearchParams(window.location.search);
-if (params.get("admin") === "preview") {
-  document.body.classList.add("admin-mode");
-  document.querySelectorAll(".admin-only").forEach((el) => {
-    el.setAttribute("aria-hidden", "false");
-  });
-}
 
 document.querySelectorAll("[data-open-editor]").forEach((button) => {
   button.addEventListener("click", () => {
@@ -85,23 +67,15 @@ document.querySelectorAll(".editor-modal").forEach((modal) => {
   });
 });
 
-document.querySelectorAll("[data-prototype-save]").forEach((button) => {
-  button.addEventListener("click", () => {
-    button.textContent = "Backend not connected yet";
-    setTimeout(() => {
-      button.textContent = button.closest("#newProjectModal") ? "Create Project" : "Save Changes";
-    }, 1600);
-  });
-});
-
 
 // =========================================================
-// V6 project-page viewport scroll cue
+// V7 project-page viewport scroll cue
 // =========================================================
 
 const projectScrollCue = document.querySelector(".project-scroll-cue");
+const projectUpdatesSection = document.getElementById("updates");
 
-if (projectScrollCue) {
+if (projectScrollCue && projectUpdatesSection) {
   let projectScrollCueDismissed = false;
 
   const hideProjectScrollCue = () => {
@@ -110,23 +84,48 @@ if (projectScrollCue) {
     projectScrollCue.classList.add("is-hidden");
   };
 
-  // Clicking the cue hides it immediately; the existing anchor then
-  // smooth-scrolls to the Development Log.
-  projectScrollCue.addEventListener("click", hideProjectScrollCue);
+  /*
+    Keep the cue visible through the beginning of the Development Log.
+    It hides only after the user's VIEWPORT CENTER has progressed at least
+    halfway through the Updates section.
 
-  // Any intentional downward scrolling hides it as well.
-  const hideCueOnScroll = () => {
-    if (window.scrollY > 8) {
+    Using the viewport center makes this behave consistently across:
+    - phones
+    - split-screen windows
+    - laptops
+    - large desktop monitors
+  */
+  const checkProjectScrollProgress = () => {
+    if (projectScrollCueDismissed) return;
+
+    const updatesTop =
+      projectUpdatesSection.getBoundingClientRect().top + window.scrollY;
+
+    const updatesHeight = projectUpdatesSection.offsetHeight;
+    const updatesMidpoint = updatesTop + updatesHeight * 0.5;
+
+    const viewportReadingPoint =
+      window.scrollY + window.innerHeight * 0.5;
+
+    if (viewportReadingPoint >= updatesMidpoint) {
       hideProjectScrollCue();
-      window.removeEventListener("scroll", hideCueOnScroll);
+      window.removeEventListener("scroll", checkProjectScrollProgress);
+      window.removeEventListener("resize", checkProjectScrollProgress);
     }
   };
 
-  window.addEventListener("scroll", hideCueOnScroll, { passive: true });
+  /*
+    Clicking the cue scrolls to the Development Log, but DOES NOT hide it.
+    It stays visible until the user actually progresses halfway through
+    the Updates section.
+  */
+  projectScrollCue.addEventListener("click", () => {
+    requestAnimationFrame(checkProjectScrollProgress);
+  });
 
-  // If a page is opened directly at an anchor or restored already scrolled,
-  // do not show the cue over the content.
-  if (window.scrollY > 8 || window.location.hash) {
-    hideProjectScrollCue();
-  }
+  window.addEventListener("scroll", checkProjectScrollProgress, { passive: true });
+  window.addEventListener("resize", checkProjectScrollProgress);
+
+  // Evaluate immediately for restored scroll positions or direct anchors.
+  checkProjectScrollProgress();
 }

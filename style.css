@@ -770,11 +770,6 @@ button, input, textarea {
   background: #155da9;
 }
 
-.prototype-note {
-  margin-top: 12px !important;
-  color: #8090a1 !important;
-  font-size: .75rem;
-}
 
 @media (max-width: 900px) {
   .project-grid,
