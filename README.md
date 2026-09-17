@@ -1,3 +1,7 @@
+Apogee Projects Frontend Live V3
+
+Viewer update: full-screen gallery images now preserve their natural aspect ratio and automatically fit within the available browser viewport in both width and height.
+
 # Apogee Lab Projects — Live Frontend V1
 
 This is the live API-connected frontend for `projects.apogeelab.org`.
