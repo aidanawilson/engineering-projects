@@ -245,7 +245,15 @@
           <div class="editor-field full">
             <label for="updateImages">Add images</label>
             <input id="updateImages" name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple>
-            <div class="editor-help">Up to 6 images per upload, 15 MB each.</div>
+            <div class="editor-help">Choose images in as many passes as needed. New selections are added to the temporary queue instead of replacing earlier selections. Up to 6 new images per upload, 15 MB each.</div>
+          </div>
+
+          <div class="editor-field full pending-images-field" id="updatePendingImagesField" hidden>
+            <div class="pending-images-heading">
+              <label>Images waiting to upload</label>
+              <span id="updatePendingImagesCount"></span>
+            </div>
+            <div class="pending-image-grid" id="updatePendingImages"></div>
           </div>
 
           <div class="editor-field full" id="existingImagesField" hidden>
@@ -281,8 +289,16 @@
 
           <div class="editor-field full">
             <label for="galleryImages">Images</label>
-            <input id="galleryImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple required>
-            <div class="editor-help">Up to 6 images per upload, 15 MB each.</div>
+            <input id="galleryImages" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple>
+            <div class="editor-help">Choose images in as many passes as needed. Each new selection is added to the temporary queue. Up to 6 images per upload, 15 MB each.</div>
+          </div>
+
+          <div class="editor-field full pending-images-field" id="galleryPendingImagesField" hidden>
+            <div class="pending-images-heading">
+              <label>Images waiting to upload</label>
+              <span id="galleryPendingImagesCount"></span>
+            </div>
+            <div class="pending-image-grid" id="galleryPendingImages"></div>
           </div>
         </div>
 

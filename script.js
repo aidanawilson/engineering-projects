@@ -7,6 +7,8 @@ const state = {
   updates: [],
   media: [],
   editingUpdateId: null,
+  pendingUpdateImages: [],
+  pendingGalleryImages: [],
   viewerItems: [],
   viewerIndex: 0
 };
@@ -250,12 +252,23 @@ function bindProjectControls() {
 
   document.getElementById("galleryUploadButton")?.addEventListener("click", () => {
     populateGalleryUpdateSelect();
+    resetPendingImageSelection("gallery");
     openModal("galleryUploadModal");
   });
 
   document.getElementById("projectEditorForm")?.addEventListener("submit", handleProjectFormSubmit);
   document.getElementById("updateEditorForm")?.addEventListener("submit", handleUpdateFormSubmit);
   document.getElementById("galleryUploadForm")?.addEventListener("submit", handleGalleryUploadSubmit);
+
+  document.getElementById("updateImages")?.addEventListener("change", event => {
+    addPendingImages("update", event.target.files);
+    event.target.value = "";
+  });
+
+  document.getElementById("galleryImages")?.addEventListener("change", event => {
+    addPendingImages("gallery", event.target.files);
+    event.target.value = "";
+  });
 
   document.getElementById("removeVideoButton")?.addEventListener("click", () => {
     const input = document.getElementById("updateYoutubeUrl");
@@ -817,8 +830,7 @@ function prepareUpdateEditor(update) {
   setInputValue("updateYoutubeUrl", update?.video?.watchUrl || "");
   setInputValue("updateYoutubeTitle", update?.video?.title || "");
 
-  const imageInput = document.getElementById("updateImages");
-  if (imageInput) imageInput.value = "";
+  resetPendingImageSelection("update");
 
   setFormError(document.getElementById("updateEditorError"), "");
 
@@ -829,6 +841,136 @@ function prepareUpdateEditor(update) {
   if (saveButton) saveButton.textContent = isEdit ? "Save Update" : "Publish Update";
 
   renderExistingImages(update?.images || []);
+}
+
+function resetPendingImageSelection(kind) {
+  if (kind === "update") {
+    state.pendingUpdateImages = [];
+    const input = document.getElementById("updateImages");
+    if (input) input.value = "";
+    renderPendingImages("update");
+    return;
+  }
+
+  state.pendingGalleryImages = [];
+  const input = document.getElementById("galleryImages");
+  if (input) input.value = "";
+  renderPendingImages("gallery");
+}
+
+function addPendingImages(kind, fileList) {
+  const incoming = [...(fileList || [])];
+  if (!incoming.length) return;
+
+  const pending = kind === "update"
+    ? state.pendingUpdateImages
+    : state.pendingGalleryImages;
+
+  const errorEl = document.getElementById(
+    kind === "update" ? "updateEditorError" : "galleryUploadError"
+  );
+
+  setFormError(errorEl, "");
+
+  const existingKeys = new Set(
+    pending.map(file => `${file.name}|${file.size}|${file.lastModified}`)
+  );
+
+  let duplicateCount = 0;
+  let limitCount = 0;
+
+  for (const file of incoming) {
+    const key = `${file.name}|${file.size}|${file.lastModified}`;
+
+    if (existingKeys.has(key)) {
+      duplicateCount++;
+      continue;
+    }
+
+    if (pending.length >= 6) {
+      limitCount++;
+      continue;
+    }
+
+    pending.push(file);
+    existingKeys.add(key);
+  }
+
+  renderPendingImages(kind);
+
+  if (limitCount > 0) {
+    setFormError(
+      errorEl,
+      "You can queue up to 6 new images at once. Publish or upload these first, then add more afterward."
+    );
+  } else if (duplicateCount > 0) {
+    showToast(duplicateCount === 1
+      ? "That image was already selected."
+      : `${duplicateCount} already-selected images were skipped.`
+    );
+  }
+}
+
+function renderPendingImages(kind) {
+  const pending = kind === "update"
+    ? state.pendingUpdateImages
+    : state.pendingGalleryImages;
+
+  const container = document.getElementById(
+    kind === "update" ? "updatePendingImages" : "galleryPendingImages"
+  );
+
+  const field = document.getElementById(
+    kind === "update" ? "updatePendingImagesField" : "galleryPendingImagesField"
+  );
+
+  const count = document.getElementById(
+    kind === "update" ? "updatePendingImagesCount" : "galleryPendingImagesCount"
+  );
+
+  if (!container || !field) return;
+
+  if (!pending.length) {
+    field.hidden = true;
+    container.innerHTML = "";
+    if (count) count.textContent = "";
+    return;
+  }
+
+  field.hidden = false;
+  if (count) count.textContent = `${pending.length} / 6 selected`;
+
+  container.innerHTML = pending.map((file, index) => `
+    <div class="pending-image-item" data-pending-image-index="${index}">
+      <img alt="" class="pending-image-preview">
+      <span class="pending-image-name">${escapeHtml(file.name)}</span>
+      <button
+        type="button"
+        class="remove-image-button pending-remove-button"
+        data-remove-pending-image="${index}"
+      >Remove</button>
+    </div>
+  `).join("");
+
+  container.querySelectorAll("[data-pending-image-index]").forEach(item => {
+    const index = Number(item.dataset.pendingImageIndex);
+    const image = item.querySelector(".pending-image-preview");
+    const file = pending[index];
+    if (!image || !file) return;
+
+    const objectUrl = URL.createObjectURL(file);
+    image.src = objectUrl;
+    image.addEventListener("load", () => URL.revokeObjectURL(objectUrl), { once: true });
+    image.addEventListener("error", () => URL.revokeObjectURL(objectUrl), { once: true });
+  });
+
+  container.querySelectorAll("[data-remove-pending-image]").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.dataset.removePendingImage);
+      pending.splice(index, 1);
+      renderPendingImages(kind);
+    });
+  });
 }
 
 function renderExistingImages(images) {
@@ -890,7 +1032,7 @@ async function handleUpdateFormSubmit(event) {
     youtubeTitle: document.getElementById("updateYoutubeTitle")?.value.trim() || ""
   };
 
-  const files = document.getElementById("updateImages")?.files || [];
+  const files = [...state.pendingUpdateImages];
 
   try {
     let updateId = state.editingUpdateId;
@@ -913,6 +1055,7 @@ async function handleUpdateFormSubmit(event) {
       await uploadImagesToUpdate(updateId, files);
     }
 
+    resetPendingImageSelection("update");
     closeModal("updateEditorModal");
     await refreshProjectData();
     showToast(state.editingUpdateId ? "Update saved." : "Update published.");
@@ -976,7 +1119,7 @@ async function handleGalleryUploadSubmit(event) {
   setFormError(errorEl, "");
 
   const updateId = Number(document.getElementById("galleryUpdateSelect")?.value);
-  const files = document.getElementById("galleryImages")?.files || [];
+  const files = [...state.pendingGalleryImages];
 
   if (!updateId || !files.length) {
     setFormError(errorEl, "Choose a Development Log update and at least one image.");
@@ -985,6 +1128,7 @@ async function handleGalleryUploadSubmit(event) {
 
   try {
     await uploadImagesToUpdate(updateId, files);
+    resetPendingImageSelection("gallery");
     closeModal("galleryUploadModal");
     event.currentTarget.reset();
     await refreshProjectData();
