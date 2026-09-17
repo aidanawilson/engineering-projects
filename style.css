@@ -2412,3 +2412,89 @@ body.admin-mode .gallery-upload-button {
     padding: 0 54px;
   }
 }
+
+/* =========================================================
+   V4 — MEDIA VIEWER: TRUE VIEWPORT-CENTERED CONTAIN MODE
+   The opened image is centered on the user's actual screen,
+   then scaled down only as much as necessary so every edge
+   remains visible regardless of source aspect ratio.
+   ========================================================= */
+
+.media-viewer-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 90px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.media-viewer-image {
+  display: block;
+  position: static;
+  flex: 0 1 auto;
+  width: auto !important;
+  height: auto !important;
+  max-width: calc(100vw - 180px) !important;
+  max-height: calc(100dvh - 112px) !important;
+  object-fit: contain !important;
+  object-position: 50% 50% !important;
+  margin: 0;
+  transform: none;
+  pointer-events: auto;
+}
+
+/* Keep videos centered in the same viewport stage, but preserve
+   a conventional widescreen presentation instead of stretching. */
+.media-viewer-video {
+  width: min(1280px, calc(100vw - 180px));
+  height: min(720px, calc((100vw - 180px) * 0.5625), calc(100dvh - 112px));
+  max-width: calc(100vw - 180px);
+  max-height: calc(100dvh - 112px);
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  pointer-events: auto;
+}
+
+.media-viewer-footer {
+  position: fixed;
+  z-index: 301;
+  left: 90px;
+  right: 90px;
+  bottom: 18px;
+}
+
+@media (max-width: 760px) {
+  .media-viewer-stage {
+    padding: 64px 12px 76px;
+  }
+
+  .media-viewer-image {
+    max-width: calc(100vw - 24px) !important;
+    max-height: calc(100dvh - 140px) !important;
+  }
+
+  .media-viewer-video {
+    width: calc(100vw - 24px);
+    height: min(calc((100vw - 24px) * 0.5625), calc(100dvh - 140px));
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 140px);
+  }
+
+  .media-viewer-footer {
+    left: 64px;
+    right: 64px;
+    bottom: 24px;
+    padding: 0;
+  }
+}

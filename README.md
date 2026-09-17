@@ -139,3 +139,6 @@ Because of that, API operations are intended to be tested on the deployed produc
 ## Media viewer update
 
 Development Log media now renders as compact per-update thumbnail strips. Selecting update media or a Gallery tile opens a full-screen media viewer with previous/next navigation. Videos remain supported in the project Gallery and viewer.
+
+## V4 media-viewer adjustment
+Full-screen image viewing now uses true viewport-centered contain behavior. The image center is aligned with the center of the user's screen and each image is scaled to keep its complete width and height visible, regardless of aspect ratio.
